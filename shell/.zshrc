@@ -104,7 +104,7 @@ fi
 
 # use in vim mode (https://dougblack.io/words/zsh-vi-mode.html)
 bindkey -v
-bindkey -M viins 'kj' vi-cmd-mode
+bindkey -M viins '^J' vi-cmd-mode
 
 bindkey '^P' up-history
 bindkey '^N' down-history
@@ -180,6 +180,5 @@ export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
