@@ -1,3 +1,6 @@
+[core]
+	editor = "nvim"
+
 [user]
 	name = Matt Garnett
 	email = matt@mattgarnett.com

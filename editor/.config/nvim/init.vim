@@ -7,8 +7,8 @@ let mapleader = "\<Space>"
 "
 
 set hidden
-let g:python_host_prog='~/.pyenv/versions/neovim3/bin/python'
-let g:python3_host_prog='~/.pyenv/versions/neovim3/bin/python'
+let g:python_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
+let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
 
 call plug#begin()
 
@@ -25,7 +25,7 @@ call plug#end()
 
 " Linter
 let g:ale_completion_enabled = 1
-let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_text_changed = 'always'
 let g:ale_lint_on_insert_leave = 1
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_enter = 0
@@ -38,14 +38,17 @@ let g:ale_rust_rls_config = {
 	\ }
 \ }
 let g:ale_rust_rls_toolchain = 'stable'
-let g:ale_linters = {'rust': ['rls']}
-highlight link ALEWarningSign Todo
-highlight link ALEErrorSign WarningMsg
-highlight link ALEVirtualTextWarning Todo
-highlight link ALEVirtualTextInfo Todo
-highlight link ALEVirtualTextError WarningMsg
-highlight ALEError guibg=None
-highlight ALEWarning guibg=None
+let g:ale_linters = {'rust': ['rls'], 'python': ['flake8']}
+let g:ale_python_flake8_executable = expand('~/.pyenv/versions/neovim3/bin/flake8')
+let g:ale_python_flake8_options = '--ignore=E501,F405,W191'
+let g:ale_python_pylint_executable = expand('~/.pyenv/versions/neovim3/bin/pylint')
+"highlight link ALEWarningSign Todo
+"highlight link ALEErrorSign WarningMsg
+"highlight link ALEVirtualTextWarning Todo
+"highlight link ALEVirtualTextInfo Todo
+"highlight link ALEVirtualTextError WarningMsg
+"highlight ALEError guibg=None
+"highlight ALEWarning guibg=None
 let g:ale_sign_error = "✖"
 let g:ale_sign_warning = "⚠"
 let g:ale_sign_info = "i"
@@ -180,8 +183,11 @@ nmap <leader>w :w<CR>
 " # Autocommands
 " =============================================================================
 
+autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
+
 " Jump to last edit position on opening file
 if has("autocmd")
   " https://stackoverflow.com/questions/31449496/vim-ignore-specifc-file-in-autocommand
   au BufReadPost * if expand('%:p') !~# '\m/\.git/' && line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
+
