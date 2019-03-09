@@ -6,66 +6,69 @@ let mapleader = "\<Space>"
 " =============================================================================
 "
 
-set hidden
-let g:python_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
+" point to python environments with pynvim installed
+let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
 let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
 
 call plug#begin()
 
-" GUI enhancements
+" consistent colors across the shell & vim
 Plug 'chriskempson/base16-vim'
+
+" linting + autocomplete + magic
 Plug 'w0rp/ale'
 
-" Fuzzy finder
+" automatically change working directory to project root
 Plug 'airblade/vim-rooter'
+
+" fuzzy finding engine
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
-" Linter
+
+" ## ale settings
+"
+
+let g:ale_linters = {
+	\ 'rust': ['rls'], 
+	\ 'python': ['flake8']
+	\ }
+
 let g:ale_completion_enabled = 1
 let g:ale_lint_on_text_changed = 'always'
 let g:ale_lint_on_insert_leave = 1
 let g:ale_lint_on_save = 0
-let g:ale_lint_on_enter = 0
+let g:ale_lint_on_enter = 1
 let g:ale_virtualtext_cursor = 1
-let g:ale_rust_rls_config = {
-	\ 'rust': {
-		\ 'all_targets': 1,
-		\ 'build_on_save': 1,
-		\ 'clippy_preference': 'on'
-	\ }
-\ }
-let g:ale_rust_rls_toolchain = 'stable'
-let g:ale_linters = {'rust': ['rls'], 'python': ['flake8']}
-let g:ale_python_flake8_executable = expand('~/.pyenv/versions/neovim3/bin/flake8')
-let g:ale_python_flake8_options = '--ignore=E501,F405,W191'
-let g:ale_python_pylint_executable = expand('~/.pyenv/versions/neovim3/bin/pylint')
-"highlight link ALEWarningSign Todo
-"highlight link ALEErrorSign WarningMsg
-"highlight link ALEVirtualTextWarning Todo
-"highlight link ALEVirtualTextInfo Todo
-"highlight link ALEVirtualTextError WarningMsg
-"highlight ALEError guibg=None
-"highlight ALEWarning guibg=None
+
 let g:ale_sign_error = "✖"
 let g:ale_sign_warning = "⚠"
 let g:ale_sign_info = "i"
 let g:ale_sign_hint = "➤"
 
-nnoremap <silent> K :ALEHover<CR>
-nnoremap <silent> gd :ALEGoToDefinition<CR>
 
-" Completion tab to select and don't hijack my enter key
-" When the <Enter> key is pressed while the popup menu is visible, it only
-" hides the menu. Use this mapping to close the menu and also start a new
-" line.
-inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+" ### python linting
+"
 
-" Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+let g:ale_python_flake8_executable = expand('~/.pyenv/versions/neovim3/bin/flake8')
+let g:ale_python_flake8_options = '--ignore=E501,F405,W191'
+let g:ale_python_pylint_executable = expand('~/.pyenv/versions/neovim3/bin/pylint')
+
+
+" ### rust linting
+"
+
+let g:ale_rust_rls_config = {
+	\ 'rust': {
+		\ 'all_targets': 1,
+		\ 'build_on_save': 1,
+		\ 'clippy_preference': 'on'
+		\ }
+	\ }
+let g:ale_rust_rls_toolchain = 'stable'
+
 
 " =============================================================================
 " # Editor settings
@@ -76,6 +79,8 @@ if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
   source ~/.vimrc_background
 endif
+
+set hidden
 
 set autoindent
 set timeoutlen=300 " http://stackoverflow.com/questions/2158516/delay-before-o-opens-a-new-line
@@ -178,6 +183,24 @@ nmap <leader>; :Buffers<CR>
 
 " " Quick-save
 nmap <leader>w :w<CR>
+
+
+" ## ale shortcuts
+"
+
+" Completion tab to select and don't hijack my enter key
+" When the <Enter> key is pressed while the popup menu is visible, it only
+" hides the menu. Use this mapping to close the menu and also start a new
+" line.
+inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
+
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+nnoremap <silent> K :ALEHover<CR>
+nnoremap <silent> gd :ALEGoToDefinition<CR>
+
 
 " =============================================================================
 " # Autocommands
