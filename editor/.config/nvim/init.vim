@@ -25,6 +25,9 @@ Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
+" enable block comments
+Plug 'scrooloose/nerdcommenter'
+
 call plug#end()
 
 
@@ -68,6 +71,16 @@ let g:ale_rust_rls_config = {
 		\ }
 	\ }
 let g:ale_rust_rls_toolchain = 'stable'
+
+
+" ### nerd commenter settings
+"
+
+" add spaces after comment delimiters by default
+let g:NERDSpaceDelims = 1
+
+" align line-wise comment delimiters flush left instead of following code indentation
+let g:NERDDefaultAlign = 'left'
 
 
 " =============================================================================
@@ -181,9 +194,11 @@ nnoremap k gk
 map <C-p> :Files<CR>
 nmap <leader>; :Buffers<CR>
 
-" " Quick-save
+" Quick-save
 nmap <leader>w :w<CR>
 
+" Trim whitespace
+nnoremap <C-w> :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
 
 " ## ale shortcuts
 "

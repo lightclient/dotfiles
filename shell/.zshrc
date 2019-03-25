@@ -149,7 +149,7 @@ BASE16_SHELL=$HOME/.config/base16-shell/
 
 # constants
 export HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
-
+export EDITOR="nvim"
 export AWS_PROFILE=bounties
 export ROLLBAR_ACCESS_KEY_CLIENT=c0f6fabe29704bf38bccd403c8bfbe19
 
