@@ -28,6 +28,9 @@ Plug 'junegunn/fzf.vim'
 " enable block comments
 Plug 'scrooloose/nerdcommenter'
 
+" file tree
+Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+
 call plug#end()
 
 
@@ -198,7 +201,7 @@ nmap <leader>; :Buffers<CR>
 nmap <leader>w :w<CR>
 
 " Trim whitespace
-nnoremap <C-w> :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
+" nnoremap <C-w> :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
 
 " ## ale shortcuts
 "

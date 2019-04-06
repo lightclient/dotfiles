@@ -151,13 +151,15 @@ BASE16_SHELL=$HOME/.config/base16-shell/
 export HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
 export EDITOR="nvim"
 export AWS_PROFILE=bounties
-export ROLLBAR_ACCESS_KEY_CLIENT=c0f6fabe29704bf38bccd403c8bfbe19
+export ROLLBAR_ACCESS_KEY_CLIENT=e0c45933a2ed43ccbf7dc2e5faff1287
+export PATH=$HOME/.bin:$PATH
+export DEV_WORKSPACE=~/Development
 
 # allows time for 'kj' to exit insert in vim-mode
 export KEYTIMEOUT=20
 
-export PATH=$HOME/.bin:$PATH
-export DEV_WORKSPACE=~/Development
+# rust config
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # golang config
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
@@ -180,5 +182,3 @@ export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
