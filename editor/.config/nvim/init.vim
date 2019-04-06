@@ -17,6 +17,11 @@ Plug 'chriskempson/base16-vim'
 
 " linting + autocomplete + magic
 Plug 'w0rp/ale'
+Plug 'rust-lang/rust.vim'
+Plug 'ncm2/ncm2'
+Plug 'roxma/nvim-yarp'
+
+
 
 " automatically change working directory to project root
 Plug 'airblade/vim-rooter'
@@ -54,6 +59,15 @@ let g:ale_sign_warning = "⚠"
 let g:ale_sign_info = "i"
 let g:ale_sign_hint = "➤"
 
+" ## nc2m settings
+"
+
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone,noselect
+
 
 " ### python linting
 "
@@ -74,6 +88,9 @@ let g:ale_rust_rls_config = {
 		\ }
 	\ }
 let g:ale_rust_rls_toolchain = 'stable'
+let g:rustfmt_autosave = 1
+let g:rustfmt_emit_files = 1
+let g:rustfmt_fail_silently = 0
 
 
 " ### nerd commenter settings
@@ -164,6 +181,13 @@ set background=dark
 " Verbose: set listchars=nbsp:¬,eol:¶,extends:»,precedes:«,trail:•
 set nolist
 set listchars=nbsp:¬,extends:»,precedes:«,trail:•
+
+" netrw
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 2
+let g:netrw_altv = 1
+let g:netrw_winsize = 15
 
 " =============================================================================
 " # Keyboard shortcuts
