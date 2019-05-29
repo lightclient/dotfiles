@@ -26,7 +26,7 @@ window:
   # Blank space added around the window in pixels. This padding is scaled
   # by DPI and the specified value is always added at both opposing sides.
   padding:
-    x: 2
+    x: 10
     y: 2
 
   # Spread additional padding evenly around the terminal content.
@@ -41,7 +41,7 @@ window:
   # Values for `decorations` (macOS only):
   #     - transparent: Title bar, transparent background and title bar buttons
   #     - buttonless: Title bar, transparent background, but no title bar buttons
-  decorations: buttonless 
+  decorations: full
 
   # When true, alacritty starts maximized.
   start_maximized: false

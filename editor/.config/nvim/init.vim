@@ -21,8 +21,6 @@ Plug 'rust-lang/rust.vim'
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 
-
-
 " automatically change working directory to project root
 Plug 'airblade/vim-rooter'
 
@@ -35,6 +33,9 @@ Plug 'scrooloose/nerdcommenter'
 
 " file tree
 Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+
+" live markdown viewer
+Plug 'shime/vim-livedown'
 
 call plug#end()
 
@@ -88,6 +89,7 @@ let g:ale_rust_rls_config = {
 		\ }
 	\ }
 let g:ale_rust_rls_toolchain = 'stable'
+let g:rustfmt_command = "rustfmt +nightly"
 let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
 let g:rustfmt_fail_silently = 0
@@ -185,7 +187,7 @@ set listchars=nbsp:¬,extends:»,precedes:«,trail:•
 " netrw
 let g:netrw_banner = 0
 let g:netrw_liststyle = 3
-let g:netrw_browse_split = 2
+let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 15
 
