@@ -53,8 +53,10 @@ zle -N zle-line-init
 zle -N zle-keymap-select
 export KEYTIMEOUT=1
 
-alias vim=nvim
-alias vi=nvim
+if command -v nvim > /dev/null; then
+	alias vim=nvim
+	alias vi=nvim
+fi
 
 if command -v exa > /dev/null; then
 	alias l='exa'
@@ -101,3 +103,5 @@ export NVM_DIR="$HOME/.nvm"
   [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"  # This loads nvm bash_completion
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
