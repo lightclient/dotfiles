@@ -251,6 +251,9 @@ nnoremap <silent> gd :ALEGoToDefinition<CR>
 " =============================================================================
 
 autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
+au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+autocmd BufNewFile,BufRead *.md set filetype=markdown ts=4 sw=4 expandtab smarttab
 
 " Jump to last edit position on opening file
 if has("autocmd")
