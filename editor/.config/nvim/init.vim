@@ -244,6 +244,7 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 nnoremap <silent> K :ALEHover<CR>
 nnoremap <silent> gd :ALEGoToDefinition<CR>
+nnoremap <silent> J :ALEDetail<CR>
 
 
 " =============================================================================

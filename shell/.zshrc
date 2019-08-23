@@ -76,6 +76,9 @@ export ROLLBAR_ACCESS_KEY_CLIENT=e0c45933a2ed43ccbf7dc2e5faff1287
 export PATH=$HOME/.bin:$PATH
 export DEV_WORKSPACE=~/Development
 
+# set gpg agent text input
+export GPG_TTY=$(tty)
+
 # allows time for 'kj' to exit insert in vim-mode
 export KEYTIMEOUT=20
 
@@ -105,3 +108,7 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

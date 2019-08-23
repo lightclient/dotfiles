@@ -3,4 +3,9 @@
 
 [user]
 	name = Matt Garnett
-	email = 14004106+c-o-l-o-r@users.noreply.github.com
+	email = 14004106+lightclient@users.noreply.github.com
+	signingkey = 43258D2C6135861588F49C857953C6F2EBDCE56C
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
