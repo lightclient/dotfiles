@@ -37,6 +37,9 @@ Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
 " live markdown viewer
 Plug 'shime/vim-livedown'
 
+" productivity tracker
+Plug 'wakatime/vim-wakatime'
+
 call plug#end()
 
 
@@ -89,7 +92,7 @@ let g:ale_rust_rls_config = {
 		\ }
 	\ }
 let g:ale_rust_rls_toolchain = 'stable'
-let g:rustfmt_command = "rustfmt +nightly"
+let g:rustfmt_command = "rustfmt"
 let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
 let g:rustfmt_fail_silently = 0

@@ -1,6 +1,5 @@
 [core]
 	editor = "nvim"
-
 [user]
 	name = Matt Garnett
 	email = 14004106+lightclient@users.noreply.github.com

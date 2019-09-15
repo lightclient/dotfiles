@@ -1,3 +1,11 @@
+source ~/.antigen.zsh
+
+# Productivity tracker
+antigen bundle sobolevn/wakatime-zsh-plugin
+
+# Done with antigen [for now >:-)]
+antigen apply
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -108,7 +116,9 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
+
+if command -v rg > /dev/null; then
+  export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
+fi
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-
