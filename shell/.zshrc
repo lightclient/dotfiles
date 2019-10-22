@@ -1,9 +1,19 @@
-source ~/.antigen.zsh
+# OS dependent loads
+case "$OSTYPE" in
+	darwin*)
+		source $(brew --prefix)/share/antigen/antigen.zsh
+		export NVM_DIR="$HOME/.nvm"
+		  [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+		  [ -s "/usr/local/opt/nvm/etc/bash_completion" ] && . "/usr/local/opt/nvm/etc/bash_completion"
+	;;
+	linux*)
+		source ~/.antigen.zsh
+		source /usr/share/nvm/init-nvm.sh
+	;;
+esac
 
 antigen bundle git
 antigen bundle docker
-
-# Productivity tracker
 antigen bundle sobolevn/wakatime-zsh-plugin
 
 # Done with antigen [for now >:-)]
@@ -108,10 +118,6 @@ fi
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
-
-# nvm config
-source /usr/share/nvm/init-nvm.sh
-
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -119,5 +125,3 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
 fi
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
