@@ -9,6 +9,10 @@ case "$OSTYPE" in
 		export PATH="/usr/local/sbin:$PATH"
 	;;
 	linux*)
+		if systemctl -q is-active graphical.target && [[ ! $DISPLAY && $XDG_VTNR -eq 1 ]]; then
+			exec startx
+		fi
+
 		source ~/.antigen.zsh
 		source /usr/share/nvm/init-nvm.sh
 	;;
@@ -84,6 +88,11 @@ if command -v exa > /dev/null; then
 	alias ll='exa'
 	alias ll='exa -l'
 	alias la='exa -la'
+else
+	alias l='ls'
+	alias ll='ls'
+	alias ll='ls -l'
+	alias la='ls -la'
 fi
 
 BASE16_SHELL=$HOME/.config/base16-shell/

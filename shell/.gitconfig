@@ -2,8 +2,8 @@
 	editor = "nvim"
 [user]
 	name = Matt Garnett
-	email = 14004106+lightclient@users.noreply.github.com
-	signingkey = 43258D2C6135861588F49C857953C6F2EBDCE56C
+	email = matt.garnett@me.com
+	signingkey = 12C00E8A5B2D2176E8A140B47456C2A96B3D0FD5
 [commit]
 	gpgsign = true
 [gpg]
