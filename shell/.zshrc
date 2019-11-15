@@ -106,6 +106,9 @@ export ROLLBAR_ACCESS_KEY_CLIENT=e0c45933a2ed43ccbf7dc2e5faff1287
 export PATH=$HOME/.bin:$PATH
 export DEV_WORKSPACE=~/Development
 
+# https://consoledonottrack.com/
+export DO_NOT_TRACK=1
+
 # set gpg agent text input
 export GPG_TTY=$(tty)
 
