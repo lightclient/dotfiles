@@ -93,6 +93,7 @@ let g:ale_rust_rls_config = {
 		\ }
 	\ }
 let g:ale_rust_rls_toolchain = 'stable'
+" let g:ale_rust_cargo_include_features = 'all'
 let g:rustfmt_command = "rustfmt"
 let g:rustfmt_autosave = 1
 let g:rustfmt_emit_files = 1
