@@ -17,6 +17,8 @@ Plug 'junegunn/fzf.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'shime/vim-livedown'
 Plug 'wakatime/vim-wakatime'
+Plug 'tpope/vim-obsession'
+Plug 'dhruvasagar/vim-prosession'
 
 call plug#end()
 
