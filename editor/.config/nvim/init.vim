@@ -6,109 +6,76 @@ let mapleader = "\<Space>"
 " =============================================================================
 "
 
-" point to python environments with pynvim installed
-" https://github.com/deoplete-plugins/deoplete-jedi/wiki/Setting-up-Python-for-Neovim
-let g:python_host_prog=expand('~/.pyenv/versions/neovim2/bin/python')
-let g:python3_host_prog=expand('~/.pyenv/versions/neovim3/bin/python')
-
 call plug#begin()
 
-" consistent colors across the shell & vim
 Plug 'chriskempson/base16-vim'
-
-" linting + autocomplete + magic
-Plug 'w0rp/ale'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'rust-lang/rust.vim'
-Plug 'ncm2/ncm2'
-Plug 'roxma/nvim-yarp'
-
-" automatically change working directory to project root
 Plug 'airblade/vim-rooter'
-
-" fuzzy finding engine
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-
-" enable block comments
 Plug 'scrooloose/nerdcommenter'
-
-" file tree
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
-
-" live markdown viewer
 Plug 'shime/vim-livedown'
-
-" productivity tracker
 Plug 'wakatime/vim-wakatime'
 
 call plug#end()
 
-
-" ## ale settings
-"
-
-let g:ale_linters = {
-	\ 'rust': ['rls'], 
-	\ 'python': ['flake8']
-	\ }
-
-let g:ale_completion_enabled = 1
-let g:ale_lint_on_text_changed = 'always'
-let g:ale_lint_on_insert_leave = 1
-let g:ale_lint_on_save = 0
-let g:ale_lint_on_enter = 1
-let g:ale_virtualtext_cursor = 1
-
-let g:ale_sign_error = "✖"
-let g:ale_sign_warning = "⚠"
-let g:ale_sign_info = "i"
-let g:ale_sign_hint = "➤"
-
-" ## nc2m settings
-"
-
-" enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
-
-" :help Ncm2PopupOpen for more information
-set completeopt=noinsert,menuone,noselect
-
-
-" ### python linting
-"
-
-let g:ale_python_flake8_executable = expand('~/.pyenv/versions/neovim3/bin/flake8')
-let g:ale_python_flake8_options = '--ignore=E501,F405,W191'
-let g:ale_python_pylint_executable = expand('~/.pyenv/versions/neovim3/bin/pylint')
-
-
-" ### rust linting
-"
-
-let g:ale_rust_rls_config = {
-	\ 'rust': {
-		\ 'all_targets': 1,
-		\ 'build_on_save': 1,
-		\ 'clippy_preference': 'on'
-		\ }
-	\ }
-let g:ale_rust_rls_toolchain = 'stable'
-" let g:ale_rust_cargo_include_features = 'all'
-let g:rustfmt_command = "rustfmt"
-let g:rustfmt_autosave = 1
-let g:rustfmt_emit_files = 1
-let g:rustfmt_fail_silently = 0
-
-
 " ### nerd commenter settings
 "
-
 " add spaces after comment delimiters by default
 let g:NERDSpaceDelims = 1
 
 " align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
 
+" =============================================================================
+" # Completion
+" =============================================================================
+"
+
+" Better display for messages
+set cmdheight=2
+
+" You will have bad experience for diagnostic messages when it's default 4000.
+set updatetime=300
+
+" Use tab for trigger completion with characters ahead and navigate.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-.> to trigger completion.
+inoremap <silent><expr> <c-.> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Or use `complete_info` if your vim support it, like:
+inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" 'Smart' nevigation
+nmap <silent> E <Plug>(coc-diagnostic-prev)
+nmap <silent> W <Plug>(coc-diagnostic-next)
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
 
 " =============================================================================
 " # Editor settings
@@ -233,24 +200,6 @@ nmap <leader>w :w<CR>
 
 " Trim whitespace
 " nnoremap <C-w> :let _s=@/ <Bar> :%s/\s\+$//e <Bar> :let @/=_s <Bar> :nohl <Bar> :unlet _s <CR>
-
-" ## ale shortcuts
-"
-
-" Completion tab to select and don't hijack my enter key
-" When the <Enter> key is pressed while the popup menu is visible, it only
-" hides the menu. Use this mapping to close the menu and also start a new
-" line.
-inoremap <expr> <CR> (pumvisible() ? "\<c-y>\<cr>" : "\<CR>")
-
-" Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-nnoremap <silent> K :ALEHover<CR>
-nnoremap <silent> gd :ALEGoToDefinition<CR>
-nnoremap <silent> J :ALEDetail<CR>
-
 
 " =============================================================================
 " # Autocommands
