@@ -104,7 +104,7 @@ export EDITOR="nvim"
 export AWS_PROFILE=bounties
 export ROLLBAR_ACCESS_KEY_CLIENT=e0c45933a2ed43ccbf7dc2e5faff1287
 export PATH=$HOME/.bin:$PATH
-export DEV_WORKSPACE=~/Development
+export DEV_WORKSPACE=~/development
 
 # https://consoledonottrack.com/
 export DO_NOT_TRACK=1
@@ -121,9 +121,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # golang config
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
 export GOBIN=$GOPATH/bin
-export GOROOT=/usr/local/opt/go/libexec
 export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
 
 # pyenv config
 if command -v pyenv 1>/dev/null 2>&1; then
