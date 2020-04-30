@@ -14,6 +14,10 @@ exec --no-startup-id blueman-applet
 # Volume manager applet
 exec --no-startup-id volumeicon
 
+# Screen Shots
+bindsym Print exec scrot '%Y-%m-%d-%s_screenshot_$wx$h.jpg' -e 'mv $f ~/images/'
+bindsym Control+Print exec gnome-screenshot -i
+
 # Use pactl to adjust volume in PulseAudio.
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
