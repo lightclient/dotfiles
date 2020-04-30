@@ -137,3 +137,4 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
 fi
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
