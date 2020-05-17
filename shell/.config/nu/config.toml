@@ -1,0 +1,7 @@
+edit_mode = "vi"
+path = ["/bin", "/usr/bin", "/usr/sbin", "~/.bin"]
+startup = ["alias la [path] { ls -af $path | select name type mode uid size modified }", "alias vim [el] { nvim $el }"]
+
+[env]
+DO_NOT_TRACK="1"
+GPG_TTY="/dev/pts/0"
