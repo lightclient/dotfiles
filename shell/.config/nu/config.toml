@@ -6,6 +6,4 @@ startup = [
 ]
 
 [env]
-# https://consoledonottrack.com
-DO_NOT_TRACK="1"
 GPG_TTY="/dev/pts/0"
