@@ -1,0 +1,27 @@
+# Don't print a new line at the start of the prompt
+add_newline = false
+
+# Replace the "❯" symbol in the prompt
+[character]
+symbol = "$"
+
+# The line_break module separates the prompt into two lines.
+[line_break]
+disabled = false
+
+[username]
+style_user = "bold dimmed blue"
+show_always = true
+
+[directory]
+truncation_length = 5
+
+# Disable the package module, hiding it from the prompt completely
+[package]
+disabled = true
+
+[aws]
+disabled = true
+
+[golang]
+disabled = true

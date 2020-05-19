@@ -1,9 +1,12 @@
 edit_mode = "vi"
-path = ["/bin", "/usr/bin", "/usr/sbin", "~/.bin"]
+history_size = 1000000000
+path = ["/home/matt/.cargo/bin", "/home/matt/development/go-workspace/bin"]
 startup = [
 	"alias la [path] { ls -af $path | select name type mode uid size modified }", 
 	"alias vim [el] { nvim $el }"
 ]
 
 [env]
-GPG_TTY="/dev/pts/0"
+LANG = "en_US.UTF-8"
+STARSHIP_CONFIG = "/home/matt/.config/starship/config.toml"
+GPG_TTY = "/dev/pts/0"
