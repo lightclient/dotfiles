@@ -2,7 +2,7 @@ edit_mode = "vi"
 history_size = 1000000000
 path = ["/home/matt/.cargo/bin", "/home/matt/development/go-workspace/bin"]
 startup = [
-	"alias la [path] { ls -af $path | select name type mode uid size modified }", 
+	"alias la [path] { exa -la $path }",
 	"alias vim [el] { nvim $el }"
 ]
 

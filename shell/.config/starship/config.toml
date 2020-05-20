@@ -7,7 +7,7 @@ symbol = "$"
 
 # The line_break module separates the prompt into two lines.
 [line_break]
-disabled = false
+disabled = true
 
 [username]
 style_user = "bold dimmed blue"
