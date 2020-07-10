@@ -4,6 +4,7 @@ add_newline = false
 # Replace the "❯" symbol in the prompt
 [character]
 symbol = "$"
+vicmd_symbol = "&"
 
 # The line_break module separates the prompt into two lines.
 [line_break]
@@ -25,3 +26,4 @@ disabled = true
 
 [golang]
 disabled = true
+
