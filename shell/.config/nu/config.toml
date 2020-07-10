@@ -1,12 +1,12 @@
 edit_mode = "vi"
 history_size = 1000000000
-path = ["/home/matt/.cargo/bin", "/home/matt/development/go-workspace/bin"]
+path = ["/home/matt/.cargo/bin", "/home/matt/development/go-workspace/bin", "/home/matt/.pyenv/shims", "/home/matt/.rbenv/shims"]
 startup = [
 	"alias la [path] { exa -la $path }",
 	"alias vim [el] { nvim $el }"
 ]
+use_starship=true
 
 [env]
 LANG = "en_US.UTF-8"
 STARSHIP_CONFIG = "/home/matt/.config/starship/config.toml"
-GPG_TTY = "/dev/pts/0"

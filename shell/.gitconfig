@@ -6,8 +6,3 @@
 	signingkey = 12C00E8A5B2D2176E8A140B47456C2A96B3D0FD5
 [commit]
 	gpgsign = true
-[gpg]
-	program = gpg
-
-[url "git@github.com:"]
-	insteadOf = https://github.com/
