@@ -1,0 +1,4 @@
+{
+	"coc.preferences.formatOnSaveFiletypes": ["rust"],
+	"rust-analyzer.updates.channel": "nightly"
+}
