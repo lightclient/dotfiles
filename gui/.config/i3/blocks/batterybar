@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 #  batterybar; displays battery percentage as a bar on i3blocks
 #  
 #  Copyright 2015 Keftaa <adnan.37h@gmail.com>
@@ -18,8 +18,10 @@
 #  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 #  MA 02110-1301, USA.
 #  
-#  
-readarray -t output <<< $(acpi battery)
+# 
+
+# grep out the peripheral device batties (hopefully)
+readarray -t output <<< $(acpi battery | acpi | grep -ve "rate information")
 battery_count=${#output[@]}
 
 for line in "${output[@]}";

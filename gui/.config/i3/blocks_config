@@ -7,7 +7,7 @@
 #
 # The top properties below are applied to every block, but can be overridden.
 # Each block command defaults to the script name to avoid boilerplate.
-command=~/.config/i3blocks/blocks/$BLOCK_NAME
+command=~/.config/i3/blocks/$BLOCK_NAME
 separator_block_width=25
 markup=none
 
@@ -20,6 +20,5 @@ min_width=bat: ■■■
 
 # Date Time
 [time]
-command=~/.config/i3blocks/blocks/time
 label= 
 interval=1
