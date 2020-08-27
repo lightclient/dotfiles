@@ -3,7 +3,7 @@ set $mod Mod4
 font pango:DejaVu Sans Mono 12
 
 # Lock screen on suspend
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock -c 141414 --nofork
 
 # Network manager applet
 exec --no-startup-id nm-applet

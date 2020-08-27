@@ -31,6 +31,9 @@ let g:NERDSpaceDelims = 1
 " align line-wise comment delimiters flush left instead of following code indentation
 let g:NERDDefaultAlign = 'left'
 
+" vimtex
+let g:tex_flavor = 'latex'
+
 " =============================================================================
 " # Completion
 " =============================================================================

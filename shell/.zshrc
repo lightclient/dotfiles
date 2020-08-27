@@ -75,8 +75,10 @@ export EDITOR="nvim"
 export PATH=$HOME/.bin:$PATH
 export DEV_WORKSPACE=~/development
 
-# set gpg agent text input
+# set gpg agent
 export GPG_TTY=$(tty)
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
 
 # allows time for 'kj' to exit insert in vim-mode
 export KEYTIMEOUT=20
@@ -94,6 +96,9 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
 fi
 
+# nvm config
+source /usr/share/nvm/init-nvm.sh
+
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 
@@ -102,9 +107,5 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
 fi
-
-# use gpg key for ssh (https://opensource.com/article/19/4/gpg-subkeys-ssh)
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
 
 eval "$(starship init zsh)"
