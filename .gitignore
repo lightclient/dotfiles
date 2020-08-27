@@ -1,0 +1,3 @@
+shell/.gnupg
+!shell/.gnupg/gpg-agent.conf
+!shell/.gnupg/sshcontrol

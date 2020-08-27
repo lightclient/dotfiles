@@ -103,4 +103,8 @@ if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
 fi
 
+# use gpg key for ssh (https://opensource.com/article/19/4/gpg-subkeys-ssh)
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
+
 eval "$(starship init zsh)"

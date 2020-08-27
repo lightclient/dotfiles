@@ -1,8 +1,8 @@
 [core]
 	editor = "nvim"
 [user]
-	name = Matt Garnett
-	email = matt.garnett@me.com
-	signingkey = 12C00E8A5B2D2176E8A140B47456C2A96B3D0FD5
+	name = lightclient@protonmail.com
+	email = lightclient@protonmail.com
+	signingkey = 062431612E12367DAE0E24766E5E56B80EE509D2
 [commit]
 	gpgsign = true
