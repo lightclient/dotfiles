@@ -11,8 +11,8 @@ vicmd_symbol = "&"
 disabled = true
 
 [username]
-style_user = "bold dimmed blue"
-show_always = true
+style_user = "bold blue"
+style_root = "red bold"
 
 [directory]
 truncation_length = 5

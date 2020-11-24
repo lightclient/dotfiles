@@ -1,4 +1,11 @@
 {
 	"coc.preferences.formatOnSaveFiletypes": ["rust"],
-	"rust-analyzer.updates.channel": "nightly"
+	"rust-analyzer.updates.channel": "nightly",
+	"languageserver": {
+		"golang": {
+			"command": "gopls",
+			"rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+			"filetypes": ["go"]
+		}
+	}
 }
