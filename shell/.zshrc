@@ -69,6 +69,10 @@ else
 	alias la='ls -la'
 fi
 
+if command -v tmux > /dev/null; then
+	alias tmux='tmux -u'
+fi
+
 # constants
 export HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
 export EDITOR="nvim"
@@ -91,22 +95,5 @@ export PATH="$HOME/.cargo/bin:$PATH"
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOPATH/bin
-
-# pyenv config
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init -)"
-fi
-
-# nvm config
-source /usr/share/nvm/init-nvm.sh
-
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-if command -v rg > /dev/null; then
-  export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
-fi
 
 eval "$(starship init zsh)"

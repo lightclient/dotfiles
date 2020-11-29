@@ -3,6 +3,3 @@
 [user]
 	name = lightclient@protonmail.com
 	email = lightclient@protonmail.com
-	signingkey = 062431612E12367DAE0E24766E5E56B80EE509D2
-[commit]
-	gpgsign = true
