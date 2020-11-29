@@ -57,6 +57,9 @@ if command -v nvim > /dev/null; then
 	alias vi=nvim
 fi
 
+# rust config
+export PATH="$HOME/.cargo/bin:$PATH"
+
 if command -v exa > /dev/null; then
 	alias l='exa'
 	alias ll='exa'
@@ -83,9 +86,6 @@ gpgconf --launch gpg-agent
 
 # allows time for 'kj' to exit insert in vim-mode
 export KEYTIMEOUT=20
-
-# rust config
-export PATH="$HOME/.cargo/bin:$PATH"
 
 # golang config
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!

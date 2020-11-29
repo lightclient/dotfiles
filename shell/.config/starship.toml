@@ -3,7 +3,8 @@ add_newline = false
 
 # Replace the "❯" symbol in the prompt
 [character]
-symbol = "$"
+success_symbol = "\\$"
+error_symbol = "[\\$](red)"
 vicmd_symbol = "&"
 
 # The line_break module separates the prompt into two lines.
@@ -11,8 +12,15 @@ vicmd_symbol = "&"
 disabled = true
 
 [username]
+format = "[$user]($style)"
 style_user = "bold blue"
-style_root = "red bold"
+show_always = true
+
+[hostname]
+format =  "@[$hostname]($style) "
+style = "bold grey"
+ssh_only = false
+disabled = false
 
 [directory]
 truncation_length = 5
