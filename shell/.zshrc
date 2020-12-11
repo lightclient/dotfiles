@@ -60,11 +60,14 @@ fi
 # rust config
 export PATH="$HOME/.cargo/bin:$PATH"
 
+# preserve current environment when sudoing
+alias sudo='sudo -E'
+
 if command -v exa > /dev/null; then
 	alias l='exa'
 	alias ll='exa'
 	alias ll='exa -l'
-	alias la='exa -la'
+	alias la='exa -lag'
 else
 	alias l='ls'
 	alias ll='ls'
@@ -98,7 +101,9 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 
 # nvm config
-source /usr/share/nvm/init-nvm.sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
