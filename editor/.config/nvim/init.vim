@@ -6,11 +6,14 @@ let mapleader = "\<Space>"
 " =============================================================================
 "
 
+execute pathogen#infect()
+
 call plug#begin()
 
 Plug 'chriskempson/base16-vim'
-Plug 'neoclide/coc.nvim', { 'tag': '*', 'branch': 'release' }
+Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'TovarishFin/vim-solidity'
 Plug 'airblade/vim-rooter'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -20,6 +23,8 @@ Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'lervag/vimtex'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
+Plug 'tpope/vim-obsession'
+Plug 'pangloss/vim-javascript'
 
 call plug#end()
 
@@ -40,6 +45,9 @@ let g:vimtex_view_general_options_latexmk = '--unique'
 " vim-go
 " use coc-go for def mapping
 let g:go_def_mapping_enabled = 0
+
+" livedown
+let g:livedown_port = 8080
 
 " =============================================================================
 " # Completion
@@ -222,6 +230,7 @@ autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 autocmd Filetype html setlocal ts=2 sw=2 expandtab
 autocmd Filetype css setlocal ts=2 sw=2 expandtab
+autocmd Filetype javascript setlocal ts=4 sw=4 expandtab
 autocmd BufNewFile,BufRead *.md set filetype=markdown ts=4 sw=4 expandtab smarttab
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
