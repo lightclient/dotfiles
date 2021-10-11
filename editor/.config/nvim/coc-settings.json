@@ -4,6 +4,8 @@
 	"rust-analyzer.diagnostics.disabled": [
 		"macro-error"
 	],
+        "python.linting.flake8Enabled": true,
+        "python.linting.mypyEnabled": true,
 	"languageserver": {
 		"golang": {
 			"command": "gopls",
