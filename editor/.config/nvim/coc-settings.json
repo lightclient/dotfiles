@@ -1,6 +1,9 @@
 {
 	"coc.preferences.formatOnSaveFiletypes": ["rust"],
-	"rust-analyzer.updates.channel": "nightly",
+	"rust-analyzer.updates.channel": "stable",
+	"rust-analyzer.diagnostics.disabled": [
+		"macro-error"
+	],
 	"languageserver": {
 		"golang": {
 			"command": "gopls",

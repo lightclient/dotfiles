@@ -6,7 +6,7 @@ let mapleader = "\<Space>"
 " =============================================================================
 "
 
-execute pathogen#infect()
+" execute pathogen#infect()
 
 call plug#begin()
 
@@ -25,6 +25,7 @@ Plug 'lervag/vimtex'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 Plug 'tpope/vim-obsession'
 Plug 'pangloss/vim-javascript'
+Plug 'quilt/vim-etk', { 'branch': 'main' }
 
 call plug#end()
 
@@ -130,7 +131,7 @@ set undofile
 set shiftwidth=8
 set softtabstop=8
 set tabstop=8
-set noexpandtab
+set expandtab
 
 " Wrapping options
 set formatoptions=tc " wrap text and comments using textwidth
@@ -159,7 +160,7 @@ set ttyfast
 set lazyredraw
 set synmaxcol=500
 set laststatus=2
-" set relativenumber " Relative line numbers
+set relativenumber " Relative line numbers
 set number " Also show current absolute line
 set diffopt+=iwhite " No whitespace in vimdiff
 " Make diffing better: https://vimways.org/2018/the-power-of-diff/
@@ -233,7 +234,7 @@ autocmd Filetype css setlocal ts=2 sw=2 expandtab
 autocmd Filetype javascript setlocal ts=4 sw=4 expandtab
 autocmd BufNewFile,BufRead *.md set filetype=markdown ts=4 sw=4 expandtab smarttab
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
-autocmd BufWritePre *.go :call CocAction('runCommand', 'editor.action.organizeImport')
+autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
 autocmd Filetype tex setlocal updatetime=1
 
 " Jump to last edit position on opening file
