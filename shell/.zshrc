@@ -75,6 +75,10 @@ else
 	alias la='ls -la'
 fi
 
+if command -v rg > /dev/null; then
+       alias grep='rg'
+fi
+
 # constants
 export HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
 export EDITOR="nvim"
