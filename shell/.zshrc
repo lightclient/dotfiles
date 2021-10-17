@@ -1,10 +1,14 @@
 # ZSH configuration
-export PROMPT="%~ $ "
+PROMPT="%~ $ "
+EDITOR="nvim"
+DEV_WORKSPACE=~/dev
+PATH=$HOME/.bin:$PATH
 
 # History (https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh)
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000000
 SAVEHIST=10000000
+HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
 
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
@@ -24,8 +28,6 @@ setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 bindkey -v
 bindkey -M viins '^J' vi-cmd-mode
 
-bindkey '^P' up-history
-bindkey '^N' down-history
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^w' backward-kill-word
@@ -75,24 +77,17 @@ else
 	alias la='ls -la'
 fi
 
+# use rg instead of grep for fzf
 if command -v rg > /dev/null; then
-       alias grep='rg'
+  export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
 fi
 
-# constants
-export HISTORY_IGNORE="(l|ls|ll|la|cd|pwd|exit|cd ..)"
-export EDITOR="nvim"
-export PATH=$HOME/.bin:$PATH
-export DEV_WORKSPACE=~/development
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # set gpg agent
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
-# echo UPDATESTARTUPTTY | gpg-connect-agent >> /dev/null
-
-# allows time for 'kj' to exit insert in vim-mode
-export KEYTIMEOUT=20
 
 # golang config
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
@@ -105,17 +100,12 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
 fi
 
 # nvm config
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-if command -v rg > /dev/null; then
-  export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
-fi
 
 eval "$(starship init zsh)"
