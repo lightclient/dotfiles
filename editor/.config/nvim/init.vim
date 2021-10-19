@@ -161,12 +161,17 @@ function! s:show_documentation()
   endif
 endfunction
 
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
 " =============================================================================
 " # Autocommands
 " =============================================================================
 
-autocmd Filetype python setlocal expandtab tabstop=4 shiftwidth=4
+autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=4 smartindent autoindent foldmethod=indent foldlevel=99 cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 autocmd Filetype javascript setlocal ts=4 sw=4 expandtab
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 foldmethod=indent expandtab
 autocmd Filetype html setlocal ts=2 sw=2 expandtab
