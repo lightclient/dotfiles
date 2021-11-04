@@ -49,7 +49,7 @@ let g:livedown_port = 8080
 "
 
 set encoding=utf-8
-
+set hidden
 set nowrap
 
 " Sane splits

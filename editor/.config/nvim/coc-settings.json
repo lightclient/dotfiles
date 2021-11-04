@@ -1,9 +1,10 @@
 {
-	"coc.preferences.formatOnSaveFiletypes": ["rust"],
+	"coc.preferences.formatOnSaveFiletypes": ["go", "python", "rust"],
 	"rust-analyzer.updates.channel": "stable",
 	"rust-analyzer.diagnostics.disabled": [
 		"macro-error"
 	],
+        "python.formatting.provider": "black",
         "python.linting.flake8Enabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.mypyEnabled": false,
