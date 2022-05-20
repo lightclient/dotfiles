@@ -1,3 +1,0 @@
-#!/usr/bin/env sh
-
-date '+%d/%m/%Y %H:%M'

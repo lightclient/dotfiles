@@ -1,0 +1,16 @@
+default partial alphanumeric_keys modifier_keys
+xkb_symbols "basic" {
+    include "us"
+    include "ctrl(nocaps)"
+
+    name[Group1]= "Mac-friendly";
+
+    key <LWIN> { [ Control_L ] };
+    key <RWIN> { [ Control_R ] };
+    key <LALT> { [ Super_L, Super_L ] };
+    key <LCTL> { [ Alt_L ] };
+
+
+    modifier_map Mod4 { Super_L, Super_R };
+    modifier_map Control { <LWIN>, <RWIN> };
+};

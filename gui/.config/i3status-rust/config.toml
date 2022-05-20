@@ -1,0 +1,25 @@
+theme = "native"
+icons = "awesome5"
+
+[[block]]
+block = "networkmanager"
+on_click = "alacritty -e nmtui"
+interface_name_exclude = ["br\\-[0-9a-f]{12}", "docker\\d+"]
+interface_name_include = []
+ap_format = "{ssid^10}"
+
+[[block]]
+block = "cpu"
+interval = 1
+
+#[[block]]
+#block = "sound"
+
+[[block]]
+block = "battery"
+if_command = "test -e /sys/class/power_supply/BAT0"
+
+[[block]]
+block = "time"
+interval = 5
+format = "%a %Y-%m-%d %R"
