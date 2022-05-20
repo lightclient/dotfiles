@@ -2,11 +2,11 @@ theme = "native"
 icons = "awesome5"
 
 [[block]]
-block = "networkmanager"
-on_click = "alacritty -e nmtui"
-interface_name_exclude = ["br\\-[0-9a-f]{12}", "docker\\d+"]
-interface_name_include = []
-ap_format = "{ssid^10}"
+block = "net"
+on_click = "alacritty -e zsh -c \"nmcli device wifi list && nmcli device wifi connect --ask\""
+device = "wlan0"
+format = "{ssid} ({signal_strength}) {ip} {speed_up;K*b} {speed_down;K*b}"
+interval = 5
 
 [[block]]
 block = "cpu"
