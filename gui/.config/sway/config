@@ -4,6 +4,7 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+output Unknown-1 scale 2
 output DP-1 pos 3840 0 res 3840x2160
 output DP-2 pos 0 0 res 3840x2160
 
@@ -60,7 +61,7 @@ exec swayidle -w \
 # You can get the names of your inputs by running: swaymsg -t get_inputs
 # Read `man 5 sway-input` for more information about this section.
 input type:keyboard {
-    xkb_options "ctrl:nocaps,ctrl:swap_lalt_lctl"
+    xkb_layout "custom"
 }
 
 ### Key bindings
