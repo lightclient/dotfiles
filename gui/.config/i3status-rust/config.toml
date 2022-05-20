@@ -1,11 +1,11 @@
 theme = "native"
-icons = "awesome5"
+icons = "awesome"
 
 [[block]]
 block = "net"
 on_click = "alacritty -e zsh -c \"nmcli device wifi list && nmcli device wifi connect --ask\""
 device = "wlan0"
-format = "{ssid} ({signal_strength}) {ip} {speed_up;K*b} {speed_down;K*b}"
+format = "{ssid} ({signal_strength}) {ip}"
 interval = 5
 
 [[block]]
