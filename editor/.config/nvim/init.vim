@@ -6,12 +6,12 @@ let mapleader = "\<Space>"
 " =============================================================================
 "
 
-" execute pathogen#infect()
-
 call plug#begin()
 
 " language support
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+Plug 'neovim/nvim-lspconfig'
+Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
 Plug 'quilt/vim-etk', { 'branch': 'main' }
 
 " nice vim things
@@ -21,6 +21,7 @@ Plug 'airblade/vim-rooter'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
+Plug 'tomlion/vim-solidity'
 
 " aux
 Plug 'shime/vim-livedown'
@@ -30,7 +31,6 @@ call plug#end()
 
 let g:coc_global_extensions = [
 \ 'coc-rust-analyzer',
-\ 'coc-go',
 \ 'coc-pyright'
 \ ]
 
@@ -115,11 +115,13 @@ set listchars=nbsp:¬,extends:»,precedes:«,trail:•
 " ; as :
 " nnoremap ; :
 
+imap jk <Esc>
+
 " Ctrl+c and Ctrl+j as Esc
-inoremap <C-j> <Esc>
-vnoremap <C-j> <Esc>
-inoremap <C-c> <Esc>
-vnoremap <C-c> <Esc>
+" inoremap <C-j> <Esc>
+" vnoremap <C-j> <Esc>
+" inoremap <C-c> <Esc>
+" vnoremap <C-c> <Esc>
 
 " <leader><leader> toggles between last buffer
 nnoremap <leader><leader> <c-^>
@@ -150,6 +152,11 @@ nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
+
+try
+    nmap <silent> [c :call CocAction('diagnosticNext')<cr>
+    nmap <silent> ]c :call CocAction('diagnosticPrevious')<cr>
+endtry
 
 " Use K to show documentation in preview window
 nnoremap <silent> K :call <SID>show_documentation()<CR>

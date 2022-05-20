@@ -65,6 +65,9 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # preserve current environment when sudoing
 alias sudo='sudo -E'
 
+# get pubilc ip address
+alias whatsmyip='curl ifconfig.me'
+
 if command -v exa > /dev/null; then
 	alias l='exa'
 	alias ll='exa'
@@ -88,6 +91,7 @@ fi
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
+# echo UPDATESTARTUPTTY | gpg-connect-agent
 
 # golang config
 export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
@@ -100,12 +104,17 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
-  eval "$(pyenv virtualenv-init -)"
 fi
 
 # nvm config
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+# export NVM_DIR="$HOME/.nvm"
+# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+source /usr/share/nvm/init-nvm.sh
+
+# tmux config
+alias tmux="tmux -u"
+export LC_CTYPE=en_US.UTF-8
 
 eval "$(starship init zsh)"
+
