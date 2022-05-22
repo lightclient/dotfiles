@@ -124,3 +124,10 @@ case `uname` in
 esac
 
 eval "$(starship init zsh)"
+
+# The following lines were added by compinstall
+zstyle :compinstall filename '/home/matt/.zshrc'
+
+autoload -Uz compinit
+compinit
+# End of lines added by compinstall
