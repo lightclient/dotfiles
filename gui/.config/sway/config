@@ -1,12 +1,6 @@
-
-<<<<<<< Updated upstream
-
 ######################
 # Sway Configuration #
 ######################
-=======
-# xwayland disable
->>>>>>> Stashed changes
 
 ### Variables
 set $mod Mod4
@@ -21,8 +15,6 @@ set $menu wofi --show run | xargs swaymsg exec --
 
 # xwayland disable
 # output Unknown-1 scale 2
-output DP-1 pos 3840 0 res 3840x2160
-output DP-2 pos 0 0 res 3840x2160
 
 # On hidpi screens, this is needed to make the title bar a decent size
 font pango:SourceCodePro 18
@@ -40,6 +32,10 @@ exec swayidle -w \
 # Custom layout for macbook keyboard to map cmd->ctrl, opt->win, ctrl->opt
 input "1452:834:Apple_Internal_Keyboard_/_Trackpad" {
     xkb_layout "mac"
+}
+
+input "1:1:AT_Translated_Set_2_keyboard" {
+    xkb_options "ctrl:nocaps,ctrl:swap_lalt_lctl"
 }
 
 ### Key bindings
