@@ -1,8 +1,12 @@
 
+<<<<<<< Updated upstream
 
 ######################
 # Sway Configuration #
 ######################
+=======
+# xwayland disable
+>>>>>>> Stashed changes
 
 ### Variables
 set $mod Mod4
@@ -196,5 +200,8 @@ bar {
 
 # Notifier
 exec mako
+
+# Dynamic display config
+exec kanshi
 
 include /etc/sway/config.d/*
