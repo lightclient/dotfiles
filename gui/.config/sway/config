@@ -17,7 +17,7 @@ set $menu wofi --show run | xargs swaymsg exec --
 # output Unknown-1 scale 2
 
 # On hidpi screens, this is needed to make the title bar a decent size
-font pango:SourceCodePro 18
+font pango:SourceCodePro 12
 
 ### Idle configuration
 exec swayidle -w \
@@ -35,6 +35,10 @@ input "1452:834:Apple_Internal_Keyboard_/_Trackpad" {
 }
 
 input "1:1:AT_Translated_Set_2_keyboard" {
+    xkb_options "ctrl:nocaps,ctrl:swap_lalt_lctl"
+}
+
+input "1133:49979:Logitech_K840_Mechanical_Corded_Keyboard" {
     xkb_options "ctrl:nocaps,ctrl:swap_lalt_lctl"
 }
 
@@ -181,7 +185,7 @@ mode "resize" {
 #
 bar {
     position bottom
-    font pango:SourceCodePro, Font Awesome 6 Free Regular 24
+    font pango:SourceCodePro, Font Awesome 6 Free Regular 12
     status_command i3status-rs $HOME/.config/i3status-rust/config.toml
     colors {
         separator #666666
@@ -198,6 +202,6 @@ bar {
 exec mako
 
 # Dynamic display config
-exec kanshi
+exec_always pkill kanshi; exec kanshi
 
 include /etc/sway/config.d/*
