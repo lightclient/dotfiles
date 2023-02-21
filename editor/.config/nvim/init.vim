@@ -11,8 +11,9 @@ call plug#begin()
 " language support
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'neovim/nvim-lspconfig'
-Plug 'glepnir/lspsaga.nvim', { 'branch': 'main' }
+
 Plug 'quilt/vim-etk', { 'branch': 'main' }
+Plug 'tomlion/vim-solidity'
 
 " nice vim things
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -21,7 +22,6 @@ Plug 'airblade/vim-rooter'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
-Plug 'tomlion/vim-solidity'
 
 " aux
 Plug 'shime/vim-livedown'
@@ -30,6 +30,7 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 call plug#end()
 
 let g:coc_global_extensions = [
+\ 'coc-go',
 \ 'coc-rust-analyzer',
 \ 'coc-pyright'
 \ ]
@@ -171,8 +172,19 @@ endfunction
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+" use <tab> to trigger completion and navigate to the next complete item
+function! CheckBackspace() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <Tab>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+
+inoremap <expr> <Tab> coc#pum#visible() ? coc#pum#next(1) : "\<Tab>"
+inoremap <expr> <S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<S-Tab>"
 
 " =============================================================================
 " # Autocommands

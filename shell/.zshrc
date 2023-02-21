@@ -115,6 +115,8 @@ case `uname` in
     export NVM_DIR="$HOME/.nvm"
     [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
     [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+
+    HOMEBREW_NO_ENV_HINTS=1
   ;;
   Linux)
     export NVM_DIR="$HOME/.nvm"
@@ -123,11 +125,16 @@ case `uname` in
   ;;
 esac
 
+export TERM=xterm-256color
+
 eval "$(starship init zsh)"
 
+<<<<<<< HEAD
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/matt/.zshrc'
 
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+
+export PATH="$PATH:/Users/matt/.foundry/bin"

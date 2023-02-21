@@ -1,5 +1,7 @@
 {
 	"coc.preferences.formatOnSaveFiletypes": ["go", "python", "rust"],
+        "suggest.noselect": true,
+        "suggest.enablePreselect": false,
 	"rust-analyzer.updates.channel": "stable",
 	"rust-analyzer.diagnostics.disabled": [
 		"macro-error"
