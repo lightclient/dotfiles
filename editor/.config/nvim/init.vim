@@ -11,7 +11,9 @@ call plug#begin()
 " language support
 Plug 'neoclide/coc.nvim', { 'branch': 'release' }
 Plug 'neovim/nvim-lspconfig'
-
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'leoluz/nvim-dap-go'
 Plug 'quilt/vim-etk', { 'branch': 'main' }
 Plug 'tomlion/vim-solidity'
 

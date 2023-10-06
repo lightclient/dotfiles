@@ -2,13 +2,16 @@
 	"coc.preferences.formatOnSaveFiletypes": ["go", "python", "rust"],
         "suggest.noselect": true,
         "suggest.enablePreselect": false,
+        "go.gopls.completeUnimported": true,
 	"rust-analyzer.updates.channel": "stable",
 	"rust-analyzer.diagnostics.disabled": [
 		"macro-error"
 	],
+        "inlayHint.enable": false,
         "python.formatting.provider": "black",
         "python.linting.flake8Enabled": true,
         "python.linting.pylintEnabled": false,
         "python.linting.mypyEnabled": false,
         "python.linting.enabled": true
+
 }
