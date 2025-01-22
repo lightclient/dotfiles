@@ -32,5 +32,8 @@ disabled = true
 [aws]
 disabled = true
 
+[docker_context]
+disabled = true
+
 [golang]
 disabled = true

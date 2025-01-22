@@ -59,6 +59,13 @@ if command -v nvim > /dev/null; then
 	alias vi=nvim
 fi
 
+if ! command -v git-pr > /dev/null; then
+  mkdir -p "$HOME/.scripts"
+  wget -q https://raw.githubusercontent.com/erikmd/git-scripts/master/bin/git-prw -O "$HOME/.scripts/git-pr"
+  chmod u+x "$HOME/.scripts/git-pr"
+fi
+export PATH="$HOME/.scripts:$PATH"
+
 # rust config
 export PATH="$HOME/.cargo/bin:$PATH"
 
@@ -129,7 +136,6 @@ export TERM=xterm-256color
 
 eval "$(starship init zsh)"
 
-<<<<<<< HEAD
 # The following lines were added by compinstall
 zstyle :compinstall filename '/home/matt/.zshrc'
 
