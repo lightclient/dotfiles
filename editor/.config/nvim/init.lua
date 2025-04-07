@@ -276,7 +276,6 @@ require("lazy").setup({
 	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
 		"lewis6991/gitsigns.nvim",
 		opts = {
-			current_line_blame = true,
 			signs = {
 				add = { text = "+" },
 				change = { text = "~" },
@@ -291,67 +290,123 @@ require("lazy").setup({
 					opts.buffer = bufnr
 					vim.keymap.set(mode, l, r, opts)
 				end
-				map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Git: [T]oggle [B]lame" })
 
-				-- Add keymap to open the blame's commit on Github.
-				vim.keymap.set("n", "<leader>gb", function()
+				-- Navigation
+				map("n", "]c", function()
+					if vim.wo.diff then
+						vim.cmd.normal({ "]c", bang = true })
+					else
+						gitsigns.nav_hunk("next")
+					end
+				end)
+
+				map("n", "[c", function()
+					if vim.wo.diff then
+						vim.cmd.normal({ "[c", bang = true })
+					else
+						gitsigns.nav_hunk("prev")
+					end
+				end)
+
+				-- Actions
+				map("n", "<leader>hs", gitsigns.stage_hunk, { desc = "Git: [H]unk [S]tage" })
+				map("n", "<leader>hr", gitsigns.reset_hunk, { desc = "Git: [H]unk [R]eset" })
+
+				map("v", "<leader>hs", function()
+					gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end, { desc = "Git: [H]unk [S]tage" })
+
+				map("v", "<leader>hr", function()
+					gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
+				end, { desc = "Git: [H]unk [R]eset" })
+
+				map("n", "<leader>hS", gitsigns.stage_buffer, { desc = "Git: [H]unk [S]tage buffer" })
+				map("n", "<leader>hR", gitsigns.reset_buffer, { desc = "Git: [H]unk [R]eset buffer" })
+				map("n", "<leader>hp", gitsigns.preview_hunk, { desc = "Git: [H]unk [P]review" })
+				map("n", "<leader>hi", gitsigns.preview_hunk_inline, { desc = "Git: [H]unk [I]nline preview" })
+
+				map("n", "<leader>hb", function()
+					gitsigns.blame_line({ full = true })
+				end, { desc = "Git: [H]unk [B]lame" })
+
+				map("n", "<leader>hd", gitsigns.diffthis, { desc = "Git: [H]unk [D]iff this" })
+
+				map("n", "<leader>hD", function()
+					gitsigns.diffthis("~")
+				end)
+
+				map("n", "<leader>hQ", function()
+					gitsigns.setqflist("all")
+				end)
+				map("n", "<leader>hq", gitsigns.setqflist)
+
+				-- Toggles
+				map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Git: [T]oggle [B]lame" })
+				map("n", "<leader>tw", gitsigns.toggle_word_diff, { desc = "Git: [T]oggle [W]ord diff" })
+
+				-- Text object
+				map({ "o", "x" }, "ih", gitsigns.select_hunk)
+
+				-- Add keymap to open the blame's commit on Github
+				vim.keymap.set("n", "<leader>hu", function()
 					local bcache = require("gitsigns.cache").cache[bufnr]
 					if not bcache then
 						vim.notify("Buffer is not attached to Gitsigns", vim.log.levels.WARN)
 						return
 					end
 
-					local current_line = vim.api.nvim_win_get_cursor(0)[1]
-					local blame_info
+					local commit_info
 
 					-- Check if blame info is already available
 					if vim.b[bufnr].gitsigns_blame_line_dict then
-						blame_info = vim.b[bufnr].gitsigns_blame_line_dict
+						commit_info = vim.b[bufnr].gitsigns_blame_line_dict
 					else
 						-- Run blame on the current line
 						local async = require("gitsigns.async")
-						async.await(nil, function()
-							blame_info = bcache:get_blame(current_line)
-
-							if not blame_info then
-								vim.notify("Could not get blame information", vim.log.levels.WARN)
-								return
-							end
-
-							-- Continue with URL opening after blame is available
-							open_commit_url(blame_info)
+						local task = async.arun(function()
+							local current_line = vim.api.nvim_win_get_cursor(0)[1]
+							local blame_info = bcache:get_blame(current_line)
+							return blame_info
 						end)
-						return
+
+						local blame = task:wait()
+						if not blame then
+							vim.notify("Could not get blame information", vim.log.levels.WARN)
+							return
+						end
+
+						commit_info = blame.commit
 					end
 
-					open_commit_url(blame_info)
-				end, { desc = "Open git commit URL for current line" })
-
-				function open_commit_url(blame_info)
-					if not blame_info or not blame_info.abbrev_sha then
+					if not commit_info or not commit_info.abbrev_sha then
 						vim.notify("No commit information available", vim.log.levels.WARN)
 						return
 					end
 
 					-- Skip for uncommitted changes
-					if blame_info.abbrev_sha == string.rep("0", 8) then
+					if commit_info.abbrev_sha == string.rep("0", 8) then
 						vim.notify("Changes not committed yet", vim.log.levels.INFO)
 						return
 					end
 
 					local remote_url = vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
 					local github_url = remote_url:gsub("git@github.com:", "https://github.com/"):gsub("%.git$", "")
-					local commit_url = github_url .. "/commit/" .. blame_info.abbrev_sha
+					local commit_url = github_url .. "/commit/" .. commit_info.abbrev_sha
 
-					-- Open URL based on your OS
+					-- Open URL based on OS
 					if vim.fn.has("mac") == 1 then
-						vim.fn.system({ "open", commit_url })
+						-- System is mac, but SSH connection is active. This likely means we
+						-- can't directly open the webpage, so let's show the URL instead.
+						local env = vim.fn.environ()
+						if env.SSH_CLIENT or env.SSH_CONNECTION then
+							vim.notify("Last modified commit URL: " .. commit_url, vim.log.levels.INFO)
+						else
+							vim.fn.system({ "open", commit_url })
+						end
 					elseif vim.fn.has("unix") == 1 then
 						vim.fn.system({ "xdg-open", commit_url })
-					else
-						vim.fn.system({ "cmd.exe", "/c", "start", "", commit_url })
 					end
-				end
+				end, { desc = "Git: [H]unk open blame commit [U]RL" })
 			end,
 		},
 	},
