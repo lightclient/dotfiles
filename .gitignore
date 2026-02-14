@@ -2,6 +2,7 @@ shell/.gnupg
 shell/.ssh/known_hosts*
 shell/.ssh/staking
 shell/.ssh/authorized_keys
+shell/.ssh/id*
 !shell/.gnupg/gpg-agent.conf
 !shell/.gnupg/sshcontrol
 shell/.config/secrets.sh
