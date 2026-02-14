@@ -17,7 +17,7 @@ PATH="$HOME/.local/bin:$PATH"
 PATH="$HOME/.scripts:$PATH"
 PATH="$HOME/.cargo/bin:$PATH"                       # Rust
 PATH="$HOME/.foundry/bin:$PATH"                     # Foundry
-PATH="$HOME/.pyenv/bin:$PATH"                       # pyenv
+
 
 export PATH
 
@@ -137,12 +137,7 @@ fi
 export GOPATH="$HOME/.go"
 export PATH="$PATH:$GOPATH/bin"
 
-# pyenv ---
-export PYENV_ROOT="$HOME/.pyenv"
-if command -v pyenv 1>/dev/null 2>&1; then
-  eval "$(pyenv init --path)"
-  eval "$(pyenv init -)"
-fi
+
 
 # fnm (fast node manager) ---
 if command -v fnm > /dev/null; then

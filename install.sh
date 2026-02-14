@@ -39,6 +39,9 @@ PACKAGES=(
   # Node
   fnm
 
+  # Python
+  uv
+
   # Dev tools
   stylua
   prettier
@@ -89,6 +92,7 @@ map_debian_neovim=""             # apt version too old, installed separately
 map_debian_fnm=""                # not in apt, installed separately
 map_debian_stylua=""             # not in apt, installed separately
 map_debian_prettier=""           # not in apt, installed separately
+map_debian_uv=""                 # not in apt, installed separately
 map_debian_go="golang"
 map_debian_tldr="tldr"
 
@@ -98,6 +102,7 @@ map_fedora_git_delta=""          # installed separately
 map_fedora_lazygit=""            # installed separately
 map_fedora_starship=""           # installed separately
 map_fedora_fnm=""                # installed separately
+map_fedora_uv=""                 # installed separately
 map_fedora_stylua=""             # installed separately
 map_fedora_prettier=""           # installed separately
 map_fedora_neovim="neovim"
@@ -165,6 +170,7 @@ install_debian() {
   install_from_cargo eza eza
   install_from_cargo zoxide zoxide
   install_from_cargo stylua stylua
+  install_uv
   install_starship
   install_fnm
   install_neovim_appimage
@@ -190,6 +196,7 @@ install_fedora() {
 
   install_from_cargo delta git-delta
   install_from_cargo stylua stylua
+  install_uv
   install_starship
   install_fnm
   install_lazygit_github
@@ -213,6 +220,12 @@ install_arch() {
 }
 
 # --- Helper installers for packages not in system repos ---
+install_uv() {
+  command -v uv &>/dev/null && return
+  echo "Installing uv..."
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+}
+
 install_starship() {
   command -v starship &>/dev/null && return
   echo "Installing starship..."
