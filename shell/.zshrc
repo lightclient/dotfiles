@@ -1,5 +1,18 @@
 # ZSH configuration
 PROMPT="%~ $ "
+
+# Auto-pull dotfiles (at most once per hour)
+_dotfiles_pull() {
+  local marker="$HOME/.dotfiles_last_pull"
+  local now=$(date +%s)
+  local last=0
+  [[ -f "$marker" ]] && last=$(cat "$marker")
+  if (( now - last > 3600 )); then
+    echo "$now" > "$marker"
+    git -C "$HOME/dotfiles" pull --ff-only --quiet 2>/dev/null &
+  fi
+}
+_dotfiles_pull
 export EDITOR="nvim"
 export VISUAL="nvim"
 DEV_WORKSPACE=~/dev
