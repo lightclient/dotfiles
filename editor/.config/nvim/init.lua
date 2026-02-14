@@ -778,17 +778,14 @@ require("lazy").setup({
 				},
 			})
 
-			-- Broadcast blink.cmp capabilities to LSP servers
-			local capabilities = require("blink.cmp").get_lsp_capabilities()
+			-- Broadcast blink.cmp capabilities to all LSP servers
+			vim.lsp.config("*", {
+				capabilities = require("blink.cmp").get_lsp_capabilities(),
+			})
 
 			-- LSP server configurations (servers auto-installed by Mason above)
-			local lspconfig = require("lspconfig")
-
-			lspconfig.gopls.setup({ capabilities = capabilities })
-			lspconfig.marksman.setup({ capabilities = capabilities })
-			lspconfig.rust_analyzer.setup({ capabilities = capabilities })
-			lspconfig.lua_ls.setup({
-				capabilities = capabilities,
+			-- Uses Neovim 0.11+ built-in vim.lsp.config/vim.lsp.enable
+			vim.lsp.config("lua_ls", {
 				settings = {
 					Lua = {
 						completion = { callSnippet = "Replace" },
@@ -796,6 +793,8 @@ require("lazy").setup({
 					},
 				},
 			})
+
+			vim.lsp.enable({ "gopls", "marksman", "rust_analyzer", "lua_ls" })
 		end,
 	},
 
@@ -940,10 +939,11 @@ require("lazy").setup({
 	{ -- Highlight, edit, and navigate code
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
-		main = "nvim-treesitter.configs", -- Sets main module to use for opts
 		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-		opts = {
-			ensure_installed = {
+		-- NOTE: Treesitter highlighting and indentation are built into Neovim 0.11+.
+		-- nvim-treesitter now only manages parser installation.
+		config = function()
+			local ensure_installed = {
 				"bash",
 				"c",
 				"diff",
@@ -957,24 +957,15 @@ require("lazy").setup({
 				"query",
 				"vim",
 				"vimdoc",
-			},
-			-- Autoinstall languages that are not installed
-			auto_install = true,
-			highlight = {
-				enable = true,
-				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-				--  If you are experiencing weird indenting issues, add the language to
-				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
-		-- There are additional nvim-treesitter modules that you can use to interact
-		-- with nvim-treesitter. You should go explore a few and see what interests you:
-		--
-		--    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-		--    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-		--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+			}
+			local installed = require("nvim-treesitter.config").get_installed()
+			local to_install = vim.tbl_filter(function(lang)
+				return not vim.tbl_contains(installed, lang)
+			end, ensure_installed)
+			if #to_install > 0 then
+				require("nvim-treesitter.install").install(to_install)
+			end
+		end,
 	},
 
 	{ -- Render markdown inline (headings, checkboxes, tables, code blocks)
