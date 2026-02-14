@@ -1,26 +1,30 @@
-# ZSH configuration
-PROMPT="%~ $ "
-
-# Auto-pull dotfiles (at most once per hour)
-_dotfiles_pull() {
-  local marker="$HOME/.dotfiles_last_pull"
-  local now=$(date +%s)
-  local last=0
-  [[ -f "$marker" ]] && last=$(cat "$marker")
-  if (( now - last > 3600 )); then
-    echo "$now" > "$marker"
-    git -C "$HOME/dotfiles" pull --ff-only --quiet 2>/dev/null &
-  fi
-}
-_dotfiles_pull
-export EDITOR="nvim"
-export VISUAL="nvim"
-DEV_WORKSPACE=~/dev
-PATH=$HOME/.local/bin:$PATH
+# ==============================================================================
+# Core Settings
+# ==============================================================================
 
 export LANG="en_US.UTF-8"
+export EDITOR="nvim"
+export VISUAL="nvim"
+export PAGER="less"
+export LESS="-R -F -X"
+export MANPAGER="nvim +Man!"
 
-# History (https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh)
+# ==============================================================================
+# PATH
+# ==============================================================================
+
+PATH="$HOME/.local/bin:$PATH"
+PATH="$HOME/.scripts:$PATH"
+PATH="$HOME/.cargo/bin:$PATH"                       # Rust
+PATH="$HOME/.foundry/bin:$PATH"                     # Foundry
+PATH="$HOME/.pyenv/bin:$PATH"                       # pyenv
+
+export PATH
+
+# ==============================================================================
+# History  (https://unix.stackexchange.com/questions/273861)
+# ==============================================================================
+
 HISTFILE="$HOME/.zsh_history"
 HISTSIZE=10000000
 SAVEHIST=10000000
@@ -39,9 +43,15 @@ setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history 
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+setopt AUTO_CD                   # Type a directory name to cd into it.
 
-# vim mode (https://dougblack.io/words/zsh-vi-mode.html)
+# ==============================================================================
+# Vi Mode & Key Bindings  (https://dougblack.io/words/zsh-vi-mode.html)
+# ==============================================================================
+
 bindkey -v
+export KEYTIMEOUT=1
+
 bindkey -M viins '^J' vi-cmd-mode
 
 bindkey '^?' backward-delete-char
@@ -49,130 +59,156 @@ bindkey '^h' backward-delete-char
 bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
 
-# search history with up & down keys
+# search history with ^P / ^N; disable raw arrow keys
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
-bindkey "^P" up-line-or-beginning-search # Up
-bindkey "^N" down-line-or-beginning-search # Down
-
+bindkey "^P" up-line-or-beginning-search
+bindkey "^N" down-line-or-beginning-search
 bindkey -s "^[[A" "\a"
 bindkey -s "^[[B" "\a"
 
+# show NORMAL indicator in right prompt
 function zle-line-init zle-keymap-select {
     VIM_PROMPT="%{$fg_bold[yellow]%} [% NORMAL]%  %{$reset_color%}"
     RPS1="${${KEYMAP/vicmd/$VIM_PROMPT}/(main|viins)/} $EPS1"
     zle reset-prompt
 }
-
 zle -N zle-line-init
 zle -N zle-keymap-select
-export KEYTIMEOUT=1
 
+# ==============================================================================
+# Aliases
+# ==============================================================================
+
+# editor
 if command -v nvim > /dev/null; then
-	alias vim=nvim
-	alias vi=nvim
+  alias vim=nvim
+  alias vi=nvim
 fi
 
-if ! command -v git-pr > /dev/null; then
-  mkdir -p "$HOME/.scripts"
-  curl -fsSL https://raw.githubusercontent.com/erikmd/git-scripts/master/bin/git-prw -o "$HOME/.scripts/git-pr"
-  chmod u+x "$HOME/.scripts/git-pr"
-fi
-export PATH="$HOME/.scripts:$PATH"
-
-# rust config
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# preserve current environment when sudoing
-alias sudo='sudo -E'
-
-# get public ip address
-alias whatsmyip='curl ifconfig.me'
-
+# listing (prefer eza > exa > ls)
 if command -v eza > /dev/null; then
-	alias l='eza'
-	alias ll='eza -l'
-	alias la='eza -lag'
+  alias l='eza'
+  alias ll='eza -l'
+  alias la='eza -lag'
 elif command -v exa > /dev/null; then
-	alias l='exa'
-	alias ll='exa -l'
-	alias la='exa -lag'
+  alias l='exa'
+  alias ll='exa -l'
+  alias la='exa -lag'
 else
-	alias l='ls'
-	alias ll='ls -l'
-	alias la='ls -la'
+  alias l='ls'
+  alias ll='ls -l'
+  alias la='ls -la'
 fi
 
-# use rg instead of grep for fzf
-if command -v rg > /dev/null; then
-  export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
-fi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# gpg agent
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
-
-# keep GPG_TTY fresh — critical for pinentry-curses after tmux reattach
-export GPG_TTY=$(tty)
-_gpg_update_tty() {
-  export GPG_TTY=$(tty)
-  gpg-connect-agent UPDATESTARTUPTTY /bye >/dev/null 2>&1
-}
-autoload -U add-zsh-hook
-add-zsh-hook preexec _gpg_update_tty
-
+alias sudo='sudo -E'                               # preserve environment
+alias whatsmyip='curl ifconfig.me'                  # public IP
+alias tmux='tmux -u'                                # force UTF-8
 alias gpg-unlock='echo | gpg --sign --armor >/dev/null'
 alias fix-term='stty sane; tput reset'
 
-# golang config
-export GOPATH=$DEV_WORKSPACE/go-workspace
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOPATH/bin
+# ==============================================================================
+# GPG / SSH Agent
+# ==============================================================================
 
-# pyenv config
+if command -v gpgconf > /dev/null; then
+  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  gpgconf --launch gpg-agent
+
+  # keep GPG_TTY fresh — critical for pinentry-curses after tmux reattach
+  export GPG_TTY=$(tty)
+  _gpg_update_tty() {
+    export GPG_TTY=$(tty)
+    gpg-connect-agent UPDATESTARTUPTTY /bye >/dev/null 2>&1
+  }
+  autoload -U add-zsh-hook
+  add-zsh-hook preexec _gpg_update_tty
+fi
+
+# ==============================================================================
+# Language & Tool Managers
+# ==============================================================================
+
+# Go ---
+export GOPATH="$HOME/.go"
+export PATH="$PATH:$GOPATH/bin"
+
+# pyenv ---
 export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init --path)"
   eval "$(pyenv init -)"
 fi
 
-# tmux config
-alias tmux="tmux -u"
+# fnm (fast node manager) ---
+if command -v fnm > /dev/null; then
+  eval "$(fnm env --use-on-cd)"
+fi
 
-# nvm config
-export NVM_DIR="$HOME/.nvm"
-case $(uname) in
-  Darwin)
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
-    export HOMEBREW_NO_ENV_HINTS=1
-  ;;
-  Linux)
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-  ;;
-esac
+# Homebrew (macOS) ---
+if [ -d /opt/homebrew ]; then
+  export HOMEBREW_NO_ENV_HINTS=1
+fi
 
-eval "$(starship init zsh)"
-
-autoload -Uz compinit
-compinit
-
-export PATH="$HOME/.foundry/bin:$PATH"
-
-# QOL improvement for EF teleport
-export TELEPORT_LOGIN=root
-
-[ -f ~/.config/secrets.sh ] && source ~/.config/secrets.sh
-
-# ruby (chruby) - macOS via homebrew
+# Ruby (chruby) — macOS via Homebrew ---
 if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
   source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
   source /opt/homebrew/opt/chruby/share/chruby/auto.sh
   chruby ruby-3.4.1
 fi
+
+# ==============================================================================
+# FZF
+# ==============================================================================
+
+if command -v rg > /dev/null; then
+  export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
+fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# ==============================================================================
+# Completions & Prompt
+# ==============================================================================
+
+# only regenerate completion dump once per day
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
+
+if command -v starship > /dev/null; then
+  eval "$(starship init zsh)"
+fi
+
+# ==============================================================================
+# Bootstrap / Auto-install
+# ==============================================================================
+
+# Auto-pull dotfiles (at most once per hour)
+_dotfiles_pull() {
+  local marker="$HOME/.dotfiles_last_pull"
+  local now=$(date +%s)
+  local last=0
+  [[ -f "$marker" ]] && last=$(cat "$marker")
+  if (( now - last > 3600 )); then
+    echo "$now" > "$marker"
+    git -C "$HOME/dotfiles" pull --ff-only --quiet 2>/dev/null &
+  fi
+}
+_dotfiles_pull
+
+# ==============================================================================
+# Environment Overrides
+# ==============================================================================
+
+export TELEPORT_LOGIN=root
+
+# ==============================================================================
+# Local / Secrets (keep last — may override anything above)
+# ==============================================================================
+
+[ -f ~/.config/secrets.sh ] && source ~/.config/secrets.sh
