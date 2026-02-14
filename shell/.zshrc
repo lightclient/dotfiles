@@ -90,6 +90,7 @@ fi
 
 # listing (prefer eza > exa > ls)
 if command -v eza > /dev/null; then
+  alias ls='eza'
   alias l='eza'
   alias ll='eza -l'
   alias la='eza -lag'
@@ -168,7 +169,7 @@ if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 fi
 if command -v bat > /dev/null; then
-  export FZF_DEFAULT_OPTS='--preview "bat --color=always --style=numbers --line-range=:200 {}" --preview-window=right:50%'
+  export FZF_CTRL_T_OPTS='--preview "if [ -d {} ]; then eza -la --color=always {} 2>/dev/null || ls -la --color=always {}; else bat --color=always --style=numbers --line-range=:200 {}; fi" --preview-window=right:50%'
 fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -204,12 +205,6 @@ if command -v starship > /dev/null; then
   eval "$(starship init zsh)"
 fi
 
-# zsh-syntax-highlighting (must be last)
-if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
-  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-fi
 
 # ==============================================================================
 # Bootstrap / Auto-install

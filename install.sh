@@ -13,7 +13,6 @@ PACKAGES=(
   starship
   tmux
   zsh-autosuggestions
-  zsh-syntax-highlighting
 
   # Modern CLI tools
   ripgrep
@@ -86,7 +85,6 @@ map_debian_eza=""                # not in apt, installed separately
 map_debian_starship=""           # not in apt, installed separately
 map_debian_zoxide=""             # not in apt, installed separately
 map_debian_zsh_autosuggestions="zsh-autosuggestions"
-map_debian_zsh_syntax_highlighting="zsh-syntax-highlighting"
 map_debian_neovim=""             # apt version too old, installed separately
 map_debian_fnm=""                # not in apt, installed separately
 map_debian_stylua=""             # not in apt, installed separately
