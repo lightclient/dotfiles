@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure user-local bins are available in this non-login shell.
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+
 # ==============================================================================
 # Dotfiles installer — detects OS and installs packages + symlinks
 # ==============================================================================
@@ -34,7 +37,7 @@ PACKAGES=(
 
   # Languages & toolchains
   go
-  rustup
+  # rustup is intentionally bootstrapped via the official installer (not distro packages)
 
   # Node
   fnm
@@ -95,7 +98,7 @@ map_debian_stylua=""             # not in apt, installed separately
 map_debian_prettier=""           # not in apt, installed separately
 map_debian_uv=""                 # not in apt, installed separately
 map_debian_go="golang"
-map_debian_tldr="tldr"
+map_debian_tldr="tealdeer"
 
 # Fedora (dnf)
 map_fedora_fd="fd-find"
@@ -120,7 +123,13 @@ get_pkg_name() {
   local pkg="$2"
   local safe_pkg="${pkg//-/_}"
   local var="map_${platform}_${safe_pkg}"
-  echo "${!var:-$pkg}"
+
+  # Respect explicit empty mappings (used to skip repo install and use custom installers).
+  if [ "${!var+x}" = "x" ]; then
+    echo "${!var}"
+  else
+    echo "$pkg"
+  fi
 }
 
 # --- Installers ---
@@ -147,36 +156,75 @@ install_macos() {
   fi
 }
 
+install_debian_fallback() {
+  local pkg="$1"
+
+  case "$pkg" in
+    git-delta)            install_from_cargo delta git-delta ;;
+    eza)                  install_from_cargo eza eza ;;
+    zoxide)               install_from_cargo zoxide zoxide ;;
+    stylua)               install_from_cargo stylua stylua ;;
+    uv)                   install_uv ;;
+    starship)             install_starship ;;
+    fnm)                  install_fnm ;;
+    neovim)               install_neovim_appimage ;;
+    lazygit)              install_lazygit_github ;;
+    prettier)             install_prettier ;;
+    tldr)                 install_tldr ;;
+    zsh-autosuggestions)  install_zsh_autosuggestions ;;
+    *)                    return 1 ;;
+  esac
+}
+
 install_debian() {
   echo "Updating apt..."
   sudo apt-get update -qq
 
   local to_install=()
+  local deferred=()
+
   for pkg in "${PACKAGES[@]}"; do
     local name
     name=$(get_pkg_name debian "$pkg")
-    [ -z "$name" ] && continue  # skip packages that need special install
+
+    # Explicit empty mapping means: install via fallback installer.
+    if [ -z "$name" ]; then
+      deferred+=("$pkg")
+      continue
+    fi
+
+    # Package name exists, but may not be available on this specific distro release.
+    if ! apt-cache show "$name" &>/dev/null; then
+      deferred+=("$pkg")
+      continue
+    fi
+
     if ! dpkg -l "$name" &>/dev/null; then
       to_install+=("$name")
     fi
   done
 
   if [ ${#to_install[@]} -gt 0 ]; then
-    echo "Installing: ${to_install[*]}"
+    echo "Installing via apt: ${to_install[*]}"
     sudo apt-get install -y "${to_install[@]}"
   fi
 
-  # Packages not available via apt — install from GitHub releases / install scripts
-  install_from_cargo delta git-delta
-  install_from_cargo eza eza
-  install_from_cargo zoxide zoxide
-  install_from_cargo stylua stylua
-  install_uv
-  install_starship
-  install_fnm
-  install_neovim_appimage
-  install_lazygit_github
-  command -v prettier &>/dev/null || npm install -g prettier 2>/dev/null || true
+  if [ ${#deferred[@]} -gt 0 ]; then
+    echo "Installing via fallback installers: ${deferred[*]}"
+    local failed=()
+    for pkg in "${deferred[@]}"; do
+      if ! install_debian_fallback "$pkg"; then
+        failed+=("$pkg")
+      fi
+    done
+
+    if [ ${#failed[@]} -gt 0 ]; then
+      echo "ERROR: Could not install packages: ${failed[*]}" >&2
+      return 1
+    fi
+  fi
+
+  ensure_debian_command_aliases
 }
 
 install_fedora() {
@@ -201,7 +249,7 @@ install_fedora() {
   install_starship
   install_fnm
   install_lazygit_github
-  command -v prettier &>/dev/null || npm install -g prettier 2>/dev/null || true
+  install_prettier
 }
 
 install_arch() {
@@ -221,6 +269,41 @@ install_arch() {
 }
 
 # --- Helper installers for packages not in system repos ---
+install_rustup_official() {
+  if ! command -v rustup &>/dev/null; then
+    echo "Installing rustup (official installer)..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
+  fi
+
+  export PATH="$HOME/.cargo/bin:$PATH"
+  [ -f "$HOME/.cargo/env" ] && . "$HOME/.cargo/env"
+
+  echo "Ensuring Rust stable toolchain..."
+  rustup toolchain install stable >/dev/null 2>&1 || true
+  rustup default stable >/dev/null
+}
+
+ensure_cargo() {
+  command -v cargo &>/dev/null && return 0
+  install_rustup_official
+  command -v cargo &>/dev/null
+}
+
+ensure_npm() {
+  command -v npm &>/dev/null && return 0
+
+  export PATH="$HOME/.local/share/fnm:$PATH"
+  install_fnm
+
+  if command -v fnm &>/dev/null; then
+    eval "$(fnm env --shell bash)"
+    fnm install --lts
+    command -v npm &>/dev/null && return 0
+  fi
+
+  return 1
+}
+
 install_uv() {
   command -v uv &>/dev/null && return
   echo "Installing uv..."
@@ -234,9 +317,65 @@ install_starship() {
 }
 
 install_fnm() {
+  export PATH="$HOME/.local/share/fnm:$PATH"
   command -v fnm &>/dev/null && return
   echo "Installing fnm..."
   curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+}
+
+install_tldr() {
+  command -v tldr &>/dev/null && return
+
+  if command -v cargo &>/dev/null || ensure_cargo; then
+    echo "Installing tealdeer via cargo..."
+    cargo install tealdeer
+    return
+  fi
+
+  if command -v npm &>/dev/null || ensure_npm; then
+    echo "Installing tldr via npm..."
+    npm install -g tldr
+    return
+  fi
+
+  echo "ERROR: unable to install tldr (need cargo or npm)" >&2
+  return 1
+}
+
+install_prettier() {
+  command -v prettier &>/dev/null && return
+
+  if ! ensure_npm; then
+    echo "ERROR: npm not available, cannot install prettier" >&2
+    return 1
+  fi
+
+  echo "Installing prettier..."
+  npm install -g prettier
+}
+
+install_zsh_autosuggestions() {
+  if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] ||
+     [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ] ||
+     [ -f "$HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+    return
+  fi
+
+  echo "Installing zsh-autosuggestions..."
+  mkdir -p "$HOME/.zsh"
+  git clone https://github.com/zsh-users/zsh-autosuggestions "$HOME/.zsh/zsh-autosuggestions"
+}
+
+ensure_debian_command_aliases() {
+  mkdir -p "$HOME/.local/bin"
+
+  if ! command -v fd &>/dev/null && command -v fdfind &>/dev/null; then
+    ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
+  fi
+
+  if ! command -v bat &>/dev/null && command -v batcat &>/dev/null; then
+    ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"
+  fi
 }
 
 install_neovim_appimage() {
@@ -264,13 +403,16 @@ install_lazygit_github() {
 install_from_cargo() {
   local cmd="$1"
   local crate="$2"
+
   command -v "$cmd" &>/dev/null && return
-  if command -v cargo &>/dev/null; then
-    echo "Installing $crate via cargo..."
-    cargo install "$crate"
-  else
-    echo "SKIP: $crate (cargo not available)"
+
+  if ! ensure_cargo; then
+    echo "ERROR: cargo not available, cannot install $crate" >&2
+    return 1
   fi
+
+  echo "Installing $crate via cargo..."
+  cargo install "$crate"
 }
 
 # --- fzf-tab (git clone, no package available) ---
@@ -286,11 +428,11 @@ install_fzf_tab() {
 install_pi() {
   if ! command -v pi &>/dev/null; then
     echo "Installing pi coding agent..."
-    if command -v npm &>/dev/null; then
-      npm install -g @mariozechner/pi-coding-agent
-    else
-      echo "SKIP: pi (npm not available, install node/fnm first)"
+    if ! ensure_npm; then
+      echo "ERROR: npm not available, cannot install pi" >&2
+      return 1
     fi
+    npm install -g @mariozechner/pi-coding-agent
   fi
 }
 
@@ -321,10 +463,22 @@ main() {
   echo ""
 
   case "$platform" in
-    macos)  install_macos ;;
-    debian) install_debian ;;
-    fedora) install_fedora ;;
-    arch)   install_arch ;;
+    macos)
+      install_macos
+      install_rustup_official
+      ;;
+    debian)
+      install_debian
+      install_rustup_official
+      ;;
+    fedora)
+      install_fedora
+      install_rustup_official
+      ;;
+    arch)
+      install_arch
+      install_rustup_official
+      ;;
     *)
       echo "Unsupported platform. Install packages manually:"
       echo "  ${PACKAGES[*]}"
