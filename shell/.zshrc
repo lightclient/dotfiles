@@ -168,6 +168,7 @@ fi
 if command -v bat > /dev/null; then
   export FZF_CTRL_T_OPTS='--preview "if [ -d {} ]; then eza -la --color=always {} 2>/dev/null || ls -la --color=always {}; else bat --color=always --style=numbers --line-range=:200 {}; fi" --preview-window=right:50%'
 fi
+export FZF_CTRL_R_OPTS='--no-preview'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ==============================================================================
