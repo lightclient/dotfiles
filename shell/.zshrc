@@ -44,6 +44,8 @@ setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording en
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
 setopt AUTO_CD                   # Type a directory name to cd into it.
+setopt GLOB_DOTS                 # Include dotfiles in glob matches and completion.
+zstyle ':completion:*' ignored-patterns '.git'
 
 # ==============================================================================
 # Vi Mode & Key Bindings  (https://dougblack.io/words/zsh-vi-mode.html)

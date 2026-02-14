@@ -609,8 +609,8 @@ require("lazy").setup({
 				-- You can put your default mappings / updates / etc. in here
 				--  All the info you're looking for is in `:help telescope.setup()`
 				defaults = {
-					-- path_display = { "absolute" },
-					file_ignore_patterns = { ".git/", "node_modules" },
+					hidden = true,
+					file_ignore_patterns = { "^.git/", "node_modules" },
 					mappings = {
 						i = { ["<c-enter>"] = "to_fuzzy_refine" },
 					},

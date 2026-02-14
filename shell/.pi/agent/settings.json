@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.52.9",
+  "lastChangelogVersion": "0.52.12",
   "defaultThinkingLevel": "xhigh",
   "hideThinkingBlock": false,
   "defaultProvider": "anthropic",
@@ -21,6 +21,6 @@
         "-skills/web-browser/SKILL.md"
       ]
     },
-    "../../dev/agents"
+    "https://github.com/lightclient/agent"
   ]
 }
