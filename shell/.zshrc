@@ -193,11 +193,11 @@ _dotfiles_pull() {
   if (( now - last > 3600 )); then
     echo "$now" > "$marker"
     (
-      local before=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
+      before=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
       git -C "$HOME/dotfiles" pull --ff-only --quiet 2>/dev/null
-      local after=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
+      after=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
       [[ "$before" != "$after" ]] && echo "dotfiles: updated (${before:0:7}..${after:0:7})"
-    &)
+    ) &
   fi
 }
 _dotfiles_pull
