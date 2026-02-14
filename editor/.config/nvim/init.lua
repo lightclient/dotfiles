@@ -958,12 +958,16 @@ require("lazy").setup({
 				"vim",
 				"vimdoc",
 			}
-			local installed = require("nvim-treesitter.config").get_installed()
-			local to_install = vim.tbl_filter(function(lang)
-				return not vim.tbl_contains(installed, lang)
-			end, ensure_installed)
-			if #to_install > 0 then
-				require("nvim-treesitter.install").install(to_install)
+			-- Safe install with error handling
+			local ok, ts_config = pcall(require, "nvim-treesitter.config")
+			if ok then
+				local installed = ts_config.get_installed()
+				local to_install = vim.tbl_filter(function(lang)
+					return not vim.tbl_contains(installed, lang)
+				end, ensure_installed)
+				if #to_install > 0 then
+					require("nvim-treesitter.install").install(to_install)
+				end
 			end
 		end,
 	},
