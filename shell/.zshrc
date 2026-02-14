@@ -223,7 +223,7 @@ _dotfiles_pull() {
       git -C "$HOME/dotfiles" pull --ff-only --quiet 2>/dev/null
       after=$(git -C "$HOME/dotfiles" rev-parse HEAD 2>/dev/null)
       [[ "$before" != "$after" ]] && echo "dotfiles: updated (${before:0:7}..${after:0:7})"
-    ) &
+    ) & disown
   fi
 }
 _dotfiles_pull
