@@ -1178,34 +1178,7 @@ require("lazy").setup({
 		--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
 	},
 
-	{
-		"yetone/avante.nvim",
-		event = "VeryLazy",
-		version = false,
-		build = "make",
-		opts = {
-			provider = "openrouter",
-			vendors = {
-				openrouter = {
-					__inherited_from = "openai",
-					endpoint = "https://openrouter.ai/api/v1",
-					api_key_name = "OPENROUTER_API_KEY",
-					model = "google/gemini-2.5-pro-preview-03-25",
-				},
-			},
-		},
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"stevearc/dressing.nvim",
-			"nvim-lua/plenary.nvim",
-			"MunifTanjim/nui.nvim",
-			{
-				"MeanderingProgrammer/render-markdown.nvim",
-				opts = { file_types = { "markdown", "Avante" } },
-				ft = { "markdown", "Avante" },
-			},
-		},
-	},
+
 
 	-- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
 	-- init.lua. If you want these files, they are in the repository, so you can just download them and
