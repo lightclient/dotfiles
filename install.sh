@@ -43,6 +43,7 @@ PACKAGES=(
   uv
 
   # Dev tools
+  stow
   stylua
   prettier
 )
@@ -281,44 +282,35 @@ install_fzf_tab() {
   fi
 }
 
-# --- Symlink dotfiles ---
+# --- pi coding agent ---
+install_pi() {
+  if ! command -v pi &>/dev/null; then
+    echo "Installing pi coding agent..."
+    if command -v npm &>/dev/null; then
+      npm install -g @mariozechner/pi-coding-agent
+    else
+      echo "SKIP: pi (npm not available, install node/fnm first)"
+    fi
+  fi
+}
+
+# --- Symlink dotfiles via stow ---
 link_dotfiles() {
   echo ""
-  echo "Linking dotfiles..."
+  echo "Linking dotfiles with stow..."
   local dotfiles_dir
   dotfiles_dir="$(cd "$(dirname "$0")" && pwd)"
+  cd "$dotfiles_dir"
 
-  local links=(
-    "shell/.zshrc:$HOME/.zshrc"
-    "shell/.tmux.conf:$HOME/.tmux.conf"
-    "shell/.gitconfig:$HOME/.gitconfig"
-    "shell/.config/starship.toml:$HOME/.config/starship.toml"
-    "shell/.gnupg/gpg-agent.conf:$HOME/.gnupg/gpg-agent.conf"
-    "shell/.ssh/config:$HOME/.ssh/config"
-    "editor/.config/nvim:$HOME/.config/nvim"
-  )
-
-  for link in "${links[@]}"; do
-    local src="${dotfiles_dir}/${link%%:*}"
-    local dst="${link##*:}"
-
-    if [ ! -e "$src" ]; then
-      echo "  SKIP: $src (not found)"
-      continue
+  for package in shell editor pi; do
+    if [ -d "$package" ]; then
+      echo "  stow $package"
+      stow -v --adopt "$package" -t "$HOME" 2>&1 | sed 's/^/    /'
     fi
-
-    mkdir -p "$(dirname "$dst")"
-
-    if [ -L "$dst" ]; then
-      rm "$dst"
-    elif [ -e "$dst" ]; then
-      echo "  BACKUP: $dst -> ${dst}.bak"
-      mv "$dst" "${dst}.bak"
-    fi
-
-    ln -sf "$src" "$dst"
-    echo "  ${dst} -> ${src}"
   done
+
+  # Restore any adopted files to repo versions
+  git checkout -- . 2>/dev/null || true
 }
 
 # --- Main ---
@@ -341,6 +333,7 @@ main() {
 
   install_fzf_tab
   link_dotfiles
+  install_pi
 
   echo ""
   echo "Done! Restart your shell or run: exec zsh"

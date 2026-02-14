@@ -1,0 +1,26 @@
+{
+  "lastChangelogVersion": "0.52.9",
+  "defaultThinkingLevel": "xhigh",
+  "hideThinkingBlock": false,
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-6",
+  "packages": [
+    {
+      "source": "https://github.com/mitsuhiko/agent-stuff",
+      "skills": [
+        "-skills/anachb/SKILL.md",
+        "-skills/commit/SKILL.md",
+        "-skills/frontend-design/SKILL.md",
+        "-skills/ghidra/SKILL.md",
+        "-skills/github/SKILL.md",
+        "-skills/mermaid/SKILL.md",
+        "-skills/oebb-scotty/SKILL.md",
+        "-skills/openscad/SKILL.md",
+        "-skills/sentry/SKILL.md",
+        "-skills/update-changelog/SKILL.md",
+        "-skills/web-browser/SKILL.md"
+      ]
+    },
+    "../../dev/agents"
+  ]
+}

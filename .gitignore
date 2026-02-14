@@ -5,3 +5,5 @@ shell/.ssh/authorized_keys
 !shell/.gnupg/gpg-agent.conf
 !shell/.gnupg/sshcontrol
 shell/.config/secrets.sh
+pi/.pi/agent/auth.json
+pi/.pi/agent/sessions
