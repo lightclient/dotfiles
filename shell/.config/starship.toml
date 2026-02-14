@@ -37,3 +37,6 @@ disabled = true
 
 [golang]
 disabled = true
+
+[ruby]
+disabled = true

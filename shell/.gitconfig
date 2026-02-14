@@ -2,12 +2,12 @@
   editor = "nvim"
 
 [user]
-	name = lightclient
-	email = lightclient@protonmail.com
-	signingkey = 062431612E12367DAE0E24766E5E56B80EE509D2
+  name = lightclient
+  email = lightclient@protonmail.com
+  signingkey = 062431612E12367DAE0E24766E5E56B80EE509D2
 
 [init]
-	defaultBranch = main
+  defaultBranch = main
 
 [diff]
   external = difft --display=inline
@@ -22,3 +22,8 @@
 
 [commit]
   gpgsign = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

@@ -190,10 +190,13 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 vim.keymap.set("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 
 -- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+-- vim.keymap.set("n", "<left>", '<cmd>echo "Use h to move!!"<CR>')
+-- vim.keymap.set("n", "<right>", '<cmd>echo "Use l to move!!"<CR>')
+-- vim.keymap.set("n", "<up>", '<cmd>echo "Use k to move!!"<CR>')
+-- vim.keymap.set("n", "<down>", '<cmd>echo "Use j to move!!"<CR>')
+
+vim.keymap.set("n", "j", "gj")
+vim.keymap.set("n", "k", "gk")
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -203,6 +206,8 @@ vim.keymap.set("n", "<C-h>", "<C-w><C-h>", { desc = "Move focus to the left wind
 vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
+
+-- TODO: figure out how to make line width adjustment with keymap
 
 -- NOTE: Some terminals have coliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -250,6 +255,8 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
 	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
+	"tpope/vim-fugitive", -- Amazing Git integration
+	"fatih/vim-go", -- Go development plugin
 
 	-- NOTE: Plugins can also be added by using a table,
 	-- with the first argument being the link and the following
@@ -366,6 +373,7 @@ require("lazy").setup({
 						local task = async.arun(function()
 							local current_line = vim.api.nvim_win_get_cursor(0)[1]
 							local blame_info = bcache:get_blame(current_line)
+							async.schedule()
 							return blame_info
 						end)
 
@@ -497,6 +505,9 @@ require("lazy").setup({
 	-- you do for a plugin at the top level, you can do for a dependency.
 	--
 	-- Use the `dependencies` key to specify the dependencies of a particular plugin
+	--
+	--
+	-- TODO: order <leader>; by most recently accessed
 
 	{ -- Fuzzy Finder (files, lsp, etc)
 		"nvim-telescope/telescope.nvim",
@@ -548,13 +559,13 @@ require("lazy").setup({
 				-- You can put your default mappings / updates / etc. in here
 				--  All the info you're looking for is in `:help telescope.setup()`
 				defaults = {
-					path_display = { "absolute" },
+					-- path_display = { "absolute" },
 					file_ignore_patterns = { ".git/", "node_modules" },
 					mappings = {
 						i = { ["<c-enter>"] = "to_fuzzy_refine" },
 					},
 				},
-				-- pickers = {}
+				pickers = { buffers = { sort_mru = true, ignore_current_buffer = true } },
 				extensions = {
 					["ui-select"] = {
 						require("telescope.themes").get_dropdown(),
@@ -993,9 +1004,9 @@ require("lazy").setup({
 				-- No, but seriously. Please read `:help ins-completion`, it is really good!
 				mapping = cmp.mapping.preset.insert({
 					-- Select the [n]ext item
-					["<C-n>"] = cmp.mapping.select_next_item(),
+					["<C-j>"] = cmp.mapping.select_next_item(),
 					-- Select the [p]revious item
-					["<C-p>"] = cmp.mapping.select_prev_item(),
+					["<C-k>"] = cmp.mapping.select_prev_item(),
 
 					-- Scroll the documentation window [b]ack / [f]orward
 					["<C-b>"] = cmp.mapping.scroll_docs(-4),
@@ -1117,6 +1128,8 @@ require("lazy").setup({
 				return "%2l:%-2v"
 			end
 
+			-- TODO: make file path not absolute
+
 			-- ... and there is more!
 			--  Check out: https://github.com/echasnovski/mini.nvim
 		end,
@@ -1185,15 +1198,23 @@ require("lazy").setup({
 		opts = {
 			-- add any opts here
 			-- for example
-			provider = "claude",
-			claude = {
-				endpoint = "https://api.anthropic.com",
-				model = "claude-3-5-sonnet-20241022",
-				timeout = 30000, -- Timeout in milliseconds
-				temperature = 0,
-				max_tokens = 4096,
-				disable_tools = true, -- disable tools!
+			provider = "openrouter",
+			vendors = {
+				openrouter = {
+					__inherited_from = "openai",
+					endpoint = "https://openrouter.ai/api/v1",
+					api_key_name = "OPENROUTER_API_KEY",
+					model = "google/gemini-2.5-pro-preview-03-25",
+				},
 			},
+			-- claude = {
+			-- 	endpoint = "https://api.anthropic.com",
+			-- 	model = "claude-3-5-sonnet-20241022",
+			-- 	timeout = 30000, -- Timeout in milliseconds
+			-- 	temperature = 0,
+			-- 	max_tokens = 4096,
+			-- 	disable_tools = true, -- disable tools!
+			-- },
 			-- openai = {
 			-- 	endpoint = "https://api.openai.com/v1",
 			-- 	model = "gpt-4o", -- your desired model (or use gpt-4o, etc.)

@@ -1,0 +1,16 @@
+[env]
+TERM = "xterm-256color"
+
+[window]
+padding.x = 10
+padding.y = 10
+
+[font]
+normal.family = "MesloLGS Nerd Font Mono"
+
+size = 14
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001b\r"

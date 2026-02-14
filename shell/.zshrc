@@ -1,8 +1,11 @@
 # ZSH configuration
 PROMPT="%~ $ "
-EDITOR="nvim"
+export EDITOR="nvim"
+export VISUAL="nvim"
 DEV_WORKSPACE=~/dev
 PATH=$HOME/.bin:$PATH
+
+export LANG="en_US.UTF-8"
 
 # History (https://unix.stackexchange.com/questions/273861/unlimited-history-in-zsh)
 HISTFILE="$HOME/.zsh_history"
@@ -98,6 +101,7 @@ fi
 export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
+alias gpg-unlock='echo | gpg --sign --armor >/dev/null'
 # echo UPDATESTARTUPTTY | gpg-connect-agent
 
 # golang config
@@ -144,3 +148,14 @@ compinit
 # End of lines added by compinstall
 
 export PATH="$PATH:/Users/matt/.foundry/bin"
+
+
+# QOL improvement for EF teleport
+export TELEPORT_LOGIN=root
+
+source ~/.config/secrets.sh
+
+source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+chruby ruby-3.4.1 # run chruby to see actual version
+export PATH="$HOME/.local/bin:$PATH"
