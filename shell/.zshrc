@@ -184,14 +184,31 @@ else
   compinit -C
 fi
 
+# fzf-tab — must be after compinit
+[ -f ~/.zsh/fzf-tab/fzf-tab.plugin.zsh ] && source ~/.zsh/fzf-tab/fzf-tab.plugin.zsh
+
 # zoxide (smarter cd)
 if command -v zoxide > /dev/null; then
   eval "$(zoxide init zsh)"
 fi
 
+# zsh-autosuggestions (fish-like suggestions as you type)
+if [ -f /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
+
 # starship prompt
 if command -v starship > /dev/null; then
   eval "$(starship init zsh)"
+fi
+
+# zsh-syntax-highlighting (must be last)
+if [ -f /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+elif [ -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]; then
+  source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 fi
 
 # ==============================================================================

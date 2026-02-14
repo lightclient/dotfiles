@@ -12,6 +12,8 @@ PACKAGES=(
   zsh
   starship
   tmux
+  zsh-autosuggestions
+  zsh-syntax-highlighting
 
   # Modern CLI tools
   ripgrep
@@ -83,6 +85,8 @@ map_debian_lazygit=""            # not in apt, installed separately
 map_debian_eza=""                # not in apt, installed separately
 map_debian_starship=""           # not in apt, installed separately
 map_debian_zoxide=""             # not in apt, installed separately
+map_debian_zsh_autosuggestions="zsh-autosuggestions"
+map_debian_zsh_syntax_highlighting="zsh-syntax-highlighting"
 map_debian_neovim=""             # apt version too old, installed separately
 map_debian_fnm=""                # not in apt, installed separately
 map_debian_stylua=""             # not in apt, installed separately
@@ -257,6 +261,15 @@ install_from_cargo() {
   fi
 }
 
+# --- fzf-tab (git clone, no package available) ---
+install_fzf_tab() {
+  if [ ! -d "$HOME/.zsh/fzf-tab" ]; then
+    echo "Installing fzf-tab..."
+    mkdir -p "$HOME/.zsh"
+    git clone https://github.com/Aloxaf/fzf-tab "$HOME/.zsh/fzf-tab"
+  fi
+}
+
 # --- Symlink dotfiles ---
 link_dotfiles() {
   echo ""
@@ -315,6 +328,7 @@ main() {
       ;;
   esac
 
+  install_fzf_tab
   link_dotfiles
 
   echo ""
