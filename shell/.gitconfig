@@ -16,12 +16,7 @@
   defaultBranch = main
 
 [diff]
-  external = difft --display=inline
-
-[alias]
-  dlog = -c diff.external=difft log --ext-diff
-  dshow = -c diff.external=difft show --ext-diff
-  ddiff = -c diff.external=difft diff
+  colorMoved = default
 
 [gpg]
   program = gpg

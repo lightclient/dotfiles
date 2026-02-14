@@ -22,8 +22,6 @@ PACKAGES=(
   zoxide
   jq
   tldr
-  difftastic
-
   # Git
   git
   git-delta
@@ -89,7 +87,6 @@ map_debian_neovim=""             # apt version too old, installed separately
 map_debian_fnm=""                # not in apt, installed separately
 map_debian_stylua=""             # not in apt, installed separately
 map_debian_prettier=""           # not in apt, installed separately
-map_debian_difftastic=""         # not in apt, installed separately
 map_debian_go="golang"
 map_debian_tldr="tldr"
 
@@ -165,7 +162,6 @@ install_debian() {
   install_from_cargo delta git-delta
   install_from_cargo eza eza
   install_from_cargo zoxide zoxide
-  install_from_cargo difftastic difft
   install_from_cargo stylua stylua
   install_starship
   install_fnm
