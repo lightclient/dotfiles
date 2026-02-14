@@ -26,6 +26,11 @@ disabled = false
 truncation_length = 5
 
 # Disable the package module, hiding it from the prompt completely
+[cmd_duration]
+min_time = 2000
+format = "[$duration]($style) "
+style = "yellow"
+
 [package]
 disabled = true
 
@@ -35,8 +40,29 @@ disabled = true
 [docker_context]
 disabled = true
 
+[bun]
+disabled = true
+
+[c]
+disabled = true
+
+[cmake]
+disabled = true
+
 [golang]
 disabled = true
 
+[lua]
+disabled = true
+
+[nodejs]
+disabled = true
+
+[python]
+disabled = true
+
 [ruby]
+disabled = true
+
+[rust]
 disabled = true
