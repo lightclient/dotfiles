@@ -358,7 +358,7 @@ require("lazy").setup({
 				map({ "o", "x" }, "ih", gitsigns.select_hunk)
 
 				-- Add keymap to open the blame's commit on Github
-				vim.keymap.set("n", "<leader>hu", function()
+				map("n", "<leader>hc", function()
 					local bcache = require("gitsigns.cache").cache[bufnr]
 					if not bcache then
 						vim.notify("Buffer is not attached to Gitsigns", vim.log.levels.WARN)
@@ -400,7 +400,10 @@ require("lazy").setup({
 						return
 					end
 
-					local remote_url = vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
+					local remote_url = vim.fn.system("git config --get remote.upstream.url"):gsub("\n", "")
+					if vim.v.shell_error ~= 0 or remote_url == "" then
+						remote_url = vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
+					end
 					local github_url = remote_url:gsub("git@github.com:", "https://github.com/"):gsub("%.git$", "")
 					local commit_url = github_url .. "/commit/" .. commit_info.abbrev_sha
 
@@ -417,7 +420,55 @@ require("lazy").setup({
 					elseif vim.fn.has("unix") == 1 then
 						vim.fn.system({ "xdg-open", commit_url })
 					end
-				end, { desc = "Git: [H]unk open blame commit [U]RL" })
+				end, { desc = "Git: [H]unk open blame [C]ommit URL" })
+
+				-- Add keymap to open the Github blame view for the current line
+				map("n", "<leader>hu", function()
+					local remote_url = vim.fn.system("git config --get remote.upstream.url"):gsub("\n", "")
+					if vim.v.shell_error ~= 0 or remote_url == "" then
+						remote_url = vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
+					end
+					if vim.v.shell_error ~= 0 or remote_url == "" then
+						vim.notify("No git remote found", vim.log.levels.WARN)
+						return
+					end
+
+					-- Get the default branch (HEAD of the chosen remote)
+					local remote_name = "upstream"
+					local test = vim.fn.system("git config --get remote.upstream.url"):gsub("\n", "")
+					if vim.v.shell_error ~= 0 or test == "" then
+						remote_name = "origin"
+					end
+					local default_branch = vim.fn
+						.system("git symbolic-ref refs/remotes/" .. remote_name .. "/HEAD 2>/dev/null")
+						:gsub("\n", "")
+						:gsub("^refs/remotes/" .. remote_name .. "/", "")
+					if vim.v.shell_error ~= 0 or default_branch == "" then
+						-- Fallback: try common branch names
+						default_branch = "main"
+					end
+
+					-- Get file path relative to the git root
+					local git_root = vim.fn.system("git rev-parse --show-toplevel"):gsub("\n", "")
+					local filepath = vim.api.nvim_buf_get_name(bufnr)
+					local rel_path = filepath:sub(#git_root + 2) -- +2 to skip the trailing /
+
+					local line = vim.api.nvim_win_get_cursor(0)[1]
+
+					local github_url = remote_url:gsub("git@github.com:", "https://github.com/"):gsub("%.git$", "")
+					local blame_url = github_url .. "/blame/" .. default_branch .. "/" .. rel_path .. "#L" .. line
+
+					if vim.fn.has("mac") == 1 then
+						local env = vim.fn.environ()
+						if env.SSH_CLIENT or env.SSH_CONNECTION then
+							vim.notify("Blame URL: " .. blame_url, vim.log.levels.INFO)
+						else
+							vim.fn.system({ "open", blame_url })
+						end
+					elseif vim.fn.has("unix") == 1 then
+						vim.fn.system({ "xdg-open", blame_url })
+					end
+				end, { desc = "Git: [H]unk open blame line [U]RL" })
 			end,
 		},
 	},
@@ -932,7 +983,7 @@ require("lazy").setup({
 				-- Disable "format_on_save lsp_fallback" for languages that don't
 				-- have a well standardized coding style. You can add additional
 				-- languages here or re-enable it for the disabled ones.
-				local disable_filetypes = { c = true, cpp = true }
+				local disable_filetypes = { c = true, cpp = true, markdown = true }
 				if disable_filetypes[vim.bo[bufnr].filetype] then
 					return nil
 				else
