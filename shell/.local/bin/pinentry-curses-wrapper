@@ -1,0 +1,7 @@
+#!/bin/sh
+# gpg-agent runs with minimal PATH — find pinentry-curses explicitly
+for p in /opt/homebrew/bin /usr/local/bin /usr/bin /bin; do
+    [ -x "$p/pinentry-curses" ] && exec "$p/pinentry-curses" "$@"
+done
+echo "ERR 83886254 pinentry-curses not found"
+exit 1

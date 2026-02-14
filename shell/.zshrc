@@ -3,7 +3,7 @@ PROMPT="%~ $ "
 export EDITOR="nvim"
 export VISUAL="nvim"
 DEV_WORKSPACE=~/dev
-PATH=$HOME/.bin:$PATH
+PATH=$HOME/.local/bin:$PATH
 
 export LANG="en_US.UTF-8"
 
@@ -64,7 +64,7 @@ fi
 
 if ! command -v git-pr > /dev/null; then
   mkdir -p "$HOME/.scripts"
-  wget -q https://raw.githubusercontent.com/erikmd/git-scripts/master/bin/git-prw -O "$HOME/.scripts/git-pr"
+  curl -fsSL https://raw.githubusercontent.com/erikmd/git-scripts/master/bin/git-prw -o "$HOME/.scripts/git-pr"
   chmod u+x "$HOME/.scripts/git-pr"
 fi
 export PATH="$HOME/.scripts:$PATH"
@@ -75,37 +75,48 @@ export PATH="$HOME/.cargo/bin:$PATH"
 # preserve current environment when sudoing
 alias sudo='sudo -E'
 
-# get pubilc ip address
+# get public ip address
 alias whatsmyip='curl ifconfig.me'
 
-if command -v exa > /dev/null; then
+if command -v eza > /dev/null; then
+	alias l='eza'
+	alias ll='eza -l'
+	alias la='eza -lag'
+elif command -v exa > /dev/null; then
 	alias l='exa'
-	alias ll='exa'
 	alias ll='exa -l'
 	alias la='exa -lag'
 else
 	alias l='ls'
-	alias ll='ls'
 	alias ll='ls -l'
 	alias la='ls -la'
 fi
 
 # use rg instead of grep for fzf
 if command -v rg > /dev/null; then
-  export FZF_DEFAULT_COMMAND=$'rg --files --hidden --glob '!.git''
+  export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# set gpg agent
-export GPG_TTY=$(tty)
+# gpg agent
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
+
+# keep GPG_TTY fresh — critical for pinentry-curses after tmux reattach
+export GPG_TTY=$(tty)
+_gpg_update_tty() {
+  export GPG_TTY=$(tty)
+  gpg-connect-agent UPDATESTARTUPTTY /bye >/dev/null 2>&1
+}
+autoload -U add-zsh-hook
+add-zsh-hook preexec _gpg_update_tty
+
 alias gpg-unlock='echo | gpg --sign --armor >/dev/null'
-# echo UPDATESTARTUPTTY | gpg-connect-agent
+alias fix-term='stty sane; tput reset'
 
 # golang config
-export GOPATH=$DEV_WORKSPACE/go-workspace # don't forget to change your path correctly!
+export GOPATH=$DEV_WORKSPACE/go-workspace
 export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOPATH/bin
 
@@ -121,41 +132,34 @@ fi
 alias tmux="tmux -u"
 
 # nvm config
-case `uname` in
+export NVM_DIR="$HOME/.nvm"
+case $(uname) in
   Darwin)
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-
-    HOMEBREW_NO_ENV_HINTS=1
+    [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"
+    [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+    export HOMEBREW_NO_ENV_HINTS=1
   ;;
   Linux)
-    export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   ;;
 esac
 
-export TERM=xterm-256color
-
 eval "$(starship init zsh)"
-
-# The following lines were added by compinstall
-zstyle :compinstall filename '/home/matt/.zshrc'
 
 autoload -Uz compinit
 compinit
-# End of lines added by compinstall
 
-export PATH="$PATH:/Users/matt/.foundry/bin"
-
+export PATH="$HOME/.foundry/bin:$PATH"
 
 # QOL improvement for EF teleport
 export TELEPORT_LOGIN=root
 
-source ~/.config/secrets.sh
+[ -f ~/.config/secrets.sh ] && source ~/.config/secrets.sh
 
-source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
-source /opt/homebrew/opt/chruby/share/chruby/auto.sh
-chruby ruby-3.4.1 # run chruby to see actual version
-export PATH="$HOME/.local/bin:$PATH"
+# ruby (chruby) - macOS via homebrew
+if [ -f /opt/homebrew/opt/chruby/share/chruby/chruby.sh ]; then
+  source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+  source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+  chruby ruby-3.4.1
+fi
