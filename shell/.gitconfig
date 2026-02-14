@@ -1,5 +1,11 @@
 [core]
   editor = "nvim"
+  pager = delta
+
+[delta]
+  navigate = true
+  syntax-theme = base16
+  line-numbers = true
 
 [user]
   name = lightclient

@@ -99,6 +99,11 @@ else
   alias la='ls -la'
 fi
 
+# bat (better cat)
+if command -v bat > /dev/null; then
+  alias cat='bat --plain'
+fi
+
 alias sudo='sudo -E'                               # preserve environment
 alias whatsmyip='curl ifconfig.me'                  # public IP
 alias tmux='tmux -u'                                # force UTF-8
@@ -162,6 +167,9 @@ fi
 if command -v rg > /dev/null; then
   export FZF_DEFAULT_COMMAND='rg --files --hidden --glob "!.git"'
 fi
+if command -v bat > /dev/null; then
+  export FZF_DEFAULT_OPTS='--preview "bat --color=always --style=numbers --line-range=:200 {}" --preview-window=right:50%'
+fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # ==============================================================================
@@ -176,6 +184,12 @@ else
   compinit -C
 fi
 
+# zoxide (smarter cd)
+if command -v zoxide > /dev/null; then
+  eval "$(zoxide init zsh)"
+fi
+
+# starship prompt
 if command -v starship > /dev/null; then
   eval "$(starship init zsh)"
 fi
