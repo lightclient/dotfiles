@@ -93,10 +93,6 @@ if command -v eza > /dev/null; then
   alias l='eza'
   alias ll='eza -l'
   alias la='eza -lag'
-elif command -v exa > /dev/null; then
-  alias l='exa'
-  alias ll='exa -l'
-  alias la='exa -lag'
 else
   alias l='ls'
   alias ll='ls -l'
