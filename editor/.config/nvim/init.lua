@@ -174,10 +174,6 @@ vim.opt.linebreak = true
 -- Press jk fast to ESC
 vim.keymap.set("i", "jk", "<ESC>")
 
--- Toggle comments (built-in gc/gcc)
-vim.keymap.set("n", "<leader>/", "gcc", { remap = true, desc = "Toggle comment line" })
-vim.keymap.set("v", "<leader>/", "gc", { remap = true, desc = "Toggle comment" })
-
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
@@ -221,6 +217,18 @@ vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper win
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
+
+-- Auto-cd to project root per window
+vim.api.nvim_create_autocmd("BufEnter", {
+	desc = "Set local working directory to project root",
+	group = vim.api.nvim_create_augroup("auto-root", { clear = true }),
+	callback = function()
+		local root = vim.fs.root(0, { ".git", "Makefile", "go.mod" })
+		if root then
+			vim.cmd.lcd(root)
+		end
+	end,
+})
 
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
@@ -308,7 +316,7 @@ require("lazy").setup({
 					else
 						gitsigns.nav_hunk("next")
 					end
-				end)
+				end, { desc = "Git: Next [C]hange" })
 
 				map("n", "[c", function()
 					if vim.wo.diff then
@@ -316,7 +324,7 @@ require("lazy").setup({
 					else
 						gitsigns.nav_hunk("prev")
 					end
-				end)
+				end, { desc = "Git: Prev [C]hange" })
 
 				-- Actions
 				map("n", "<leader>hs", gitsigns.stage_hunk, { desc = "Git: [H]unk [S]tage" })
@@ -343,19 +351,19 @@ require("lazy").setup({
 
 				map("n", "<leader>hD", function()
 					gitsigns.diffthis("~")
-				end)
+				end, { desc = "Git: [H]unk [D]iff against last commit" })
 
 				map("n", "<leader>hQ", function()
 					gitsigns.setqflist("all")
-				end)
-				map("n", "<leader>hq", gitsigns.setqflist)
+				end, { desc = "Git: [H]unk [Q]uickfix all" })
+				map("n", "<leader>hq", gitsigns.setqflist, { desc = "Git: [H]unk [Q]uickfix" })
 
 				-- Toggles
 				map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Git: [T]oggle [B]lame" })
 				map("n", "<leader>tw", gitsigns.toggle_word_diff, { desc = "Git: [T]oggle [W]ord diff" })
 
 				-- Text object
-				map({ "o", "x" }, "ih", gitsigns.select_hunk)
+				map({ "o", "x" }, "ih", gitsigns.select_hunk, { desc = "Git: [I]nner [H]unk text object" })
 
 				-- Add keymap to open the blame's commit on Github
 				map("n", "<leader>hc", function()
@@ -533,22 +541,10 @@ require("lazy").setup({
 
 			-- Document existing key chains
 			spec = {
-				{ "<leader>c", group = "[C]ode", mode = { "n", "x" } },
-				{ "<leader>d", group = "[D]ocument" },
-				{ "<leader>r", group = "[R]ename" },
+				{ "<leader>l", group = "[L]SP", mode = { "n", "x" } },
 				{ "<leader>s", group = "[S]earch" },
-				{ "<leader>w", group = "[W]orkspace" },
 				{ "<leader>t", group = "[T]oggle" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
-			},
-		},
-		keys = {
-			{
-				"<leader>?",
-				function()
-					require("which-key").show({ global = false })
-				end,
-				desc = "Buffer Local Keymaps (which-key)",
 			},
 		},
 	},
@@ -636,12 +632,16 @@ require("lazy").setup({
 			vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "[S]earch [H]elp" })
 			vim.keymap.set("n", "<leader>sk", builtin.keymaps, { desc = "[S]earch [K]eymaps" })
 			vim.keymap.set("n", "<C-p>", builtin.find_files, { desc = "[S]earch [F]iles" })
+			vim.keymap.set("n", "<C-g>", builtin.live_grep, { desc = "[S]earch by [G]rep" })
 			vim.keymap.set("n", "<leader>ss", builtin.builtin, { desc = "[S]earch [S]elect Telescope" })
 			vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "[S]earch current [W]ord" })
 			vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "[S]earch by [G]rep" })
 			vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
 			vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "[S]earch [R]esume" })
 			vim.keymap.set("n", "<leader>s.", builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
+			vim.keymap.set("n", "<leader>sc", function()
+				builtin.colorscheme({ enable_preview = true })
+			end, { desc = "[S]earch [C]olorscheme" })
 			vim.keymap.set("n", "<leader>;", builtin.buffers, { desc = "[;] Find existing buffers" })
 			vim.keymap.set("n", "<leader><leader>", "<C-^>", { desc = "[ ] Jump to last buffer" })
 
@@ -758,27 +758,23 @@ require("lazy").setup({
 					-- Jump to the type of the word under your cursor.
 					--  Useful when you're not sure what type a variable is and you want to see
 					--  the definition of its *type*, not where it was *defined*.
-					map("<leader>D", require("telescope.builtin").lsp_type_definitions, "Type [D]efinition")
+					map("<leader>lt", require("telescope.builtin").lsp_type_definitions, "[T]ype definition")
 
 					-- Fuzzy find all the symbols in your current document.
 					--  Symbols are things like variables, functions, types, etc.
-					map("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
+					map("<leader>ls", require("telescope.builtin").lsp_document_symbols, "Document [S]ymbols")
 
 					-- Fuzzy find all the symbols in your current workspace.
 					--  Similar to document symbols, except searches over your entire project.
-					map(
-						"<leader>ws",
-						require("telescope.builtin").lsp_dynamic_workspace_symbols,
-						"[W]orkspace [S]ymbols"
-					)
+					map("<leader>lS", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Workspace [S]ymbols")
 
 					-- Rename the variable under your cursor.
 					--  Most Language Servers support renaming across files, etc.
-					map("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
+					map("<leader>lr", vim.lsp.buf.rename, "[R]ename")
 
 					-- Execute a code action, usually your cursor needs to be on top of an error
 					-- or a suggestion from your LSP for this to activate.
-					map("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction", { "n", "x" })
+					map("<leader>la", vim.lsp.buf.code_action, "Code [A]ction", { "n", "x" })
 
 					-- WARN: This is not Goto Definition, this is Goto Declaration.
 					--  For example, in C this would take you to the header.
@@ -899,7 +895,7 @@ require("lazy").setup({
 				gopls = {},
 				marksman = {},
 				-- pyright = {},
-				-- rust_analyzer = {},
+				rust_analyzer = {},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -1123,27 +1119,20 @@ require("lazy").setup({
 		end,
 	},
 
-	{ -- You can easily change to a different colorscheme.
-		-- Change the name of the colorscheme plugin below, and then
-		-- change the command in the config to whatever the name of that colorscheme is.
-		--
-		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+	{ -- Colorschemes
 		"folke/tokyonight.nvim",
-		priority = 1000, -- Make sure to load this before all the other start plugins.
+		priority = 1000,
 		config = function()
 			---@diagnostic disable-next-line: missing-fields
 			require("tokyonight").setup({
-				styles = {
-					comments = { italic = false }, -- Disable italics in comments
-				},
+				styles = { comments = { italic = false } },
 			})
-
-			-- Load the colorscheme here.
-			-- Like many other themes, this one has different styles, and you could load
-			-- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
 			vim.cmd.colorscheme("tokyonight-night")
 		end,
 	},
+	{ "catppuccin/nvim", name = "catppuccin", opts = { no_italic = true } },
+	{ "rose-pine/neovim", name = "rose-pine", opts = { styles = { italic = false } } },
+	{ "EdenEast/nightfox.nvim" },
 
 	-- Highlight todo, notes, etc in comments
 	{
