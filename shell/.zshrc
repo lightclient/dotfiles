@@ -143,6 +143,7 @@ export PATH="$PATH:$GOPATH/bin"
 
 # fnm (fast node manager) ---
 if command -v fnm > /dev/null; then
+  export PATH="$FNM_PATH:$PATH"
   eval "$(fnm env --use-on-cd)"
 fi
 
