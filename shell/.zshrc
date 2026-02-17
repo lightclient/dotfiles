@@ -142,9 +142,9 @@ export PATH="$PATH:$GOPATH/bin"
 
 
 # fnm (fast node manager) ---
+export PATH="$HOME/.local/share/fnm:$PATH"
 if command -v fnm > /dev/null; then
-  export PATH="$FNM_PATH:$PATH"
-  eval "$(fnm env --use-on-cd)"
+  eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
 # Homebrew (macOS) ---
