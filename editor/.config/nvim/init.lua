@@ -562,7 +562,6 @@ require("lazy").setup({
 	{ -- Fuzzy Finder (files, lsp, etc)
 		"nvim-telescope/telescope.nvim",
 		event = "VimEnter",
-		branch = "0.1.x",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			{ -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -683,16 +682,17 @@ require("lazy").setup({
 			},
 		},
 	},
+	-- LSP progress indicator
+	{ "j-hui/fidget.nvim", opts = {} },
+
+	-- Mason + Built-in LSP Configuration (Neovim 0.11+, no nvim-lspconfig needed)
 	{
-		-- Main LSP Configuration
-		"neovim/nvim-lspconfig",
+		"williamboman/mason.nvim",
 		dependencies = {
-			{ "williamboman/mason.nvim", opts = {} },
 			{ "WhoIsSethDaniel/mason-tool-installer.nvim" },
-			{ "j-hui/fidget.nvim", opts = {} },
 		},
 		config = function()
-			-- Auto-install LSP servers and tools via Mason
+			require("mason").setup()
 			require("mason-tool-installer").setup({
 				ensure_installed = {
 					"gopls",
@@ -726,8 +726,7 @@ require("lazy").setup({
 					-- Highlight references of the word under cursor
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
-						local highlight_augroup =
-							vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
+						local highlight_augroup = vim.api.nvim_create_augroup("lsp-highlight", { clear = false })
 						vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 							buffer = event.buf,
 							group = highlight_augroup,
@@ -783,15 +782,36 @@ require("lazy").setup({
 				capabilities = require("blink.cmp").get_lsp_capabilities(),
 			})
 
-			-- LSP server configurations (servers auto-installed by Mason above)
-			-- Uses Neovim 0.11+ built-in vim.lsp.config/vim.lsp.enable
+			-- LSP server configurations (Neovim 0.11+ built-in)
+			-- Each needs cmd + filetypes since we're not using nvim-lspconfig
+			vim.lsp.config("gopls", {
+				cmd = { "gopls" },
+				filetypes = { "go", "gomod", "gowork", "gotmpl" },
+				root_markers = { "go.mod", "go.work" },
+			})
+
 			vim.lsp.config("lua_ls", {
+				cmd = { "lua-language-server" },
+				filetypes = { "lua" },
+				root_markers = { ".luarc.json", ".luarc.jsonc", ".stylua.toml", "stylua.toml" },
 				settings = {
 					Lua = {
 						completion = { callSnippet = "Replace" },
 						diagnostics = { globals = { "vim" } },
 					},
 				},
+			})
+
+			vim.lsp.config("marksman", {
+				cmd = { "marksman", "server" },
+				filetypes = { "markdown", "markdown.mdx" },
+				root_markers = { ".marksman.toml" },
+			})
+
+			vim.lsp.config("rust_analyzer", {
+				cmd = { "rust-analyzer" },
+				filetypes = { "rust" },
+				root_markers = { "Cargo.toml", "rust-project.json" },
 			})
 
 			vim.lsp.enable({ "gopls", "marksman", "rust_analyzer", "lua_ls" })
@@ -969,6 +989,13 @@ require("lazy").setup({
 					require("nvim-treesitter.install").install(to_install)
 				end
 			end
+
+			-- Enable built-in treesitter highlighting and indentation (Neovim 0.11+)
+			vim.api.nvim_create_autocmd("FileType", {
+				callback = function(args)
+					pcall(vim.treesitter.start, args.buf)
+				end,
+			})
 		end,
 	},
 
