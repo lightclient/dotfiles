@@ -241,3 +241,4 @@ export TELEPORT_LOGIN=root
 
 [ -f ~/.config/secrets.sh ] && source ~/.config/secrets.sh
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
+[ -f ~/.local/bin/co.sh ] && source ~/.local/bin/co.sh
