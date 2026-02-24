@@ -78,6 +78,26 @@ EOF
         echo "${fallback:-$CO_PARENT}"
     }
 
+    _co_resolve_url() {
+        local url="$1" longest_match="" longest_base="" line key val base
+        while IFS= read -r line; do
+            [[ -z "$line" ]] && continue
+            key="${line%% *}"
+            val="${line#* }"
+            base="${key#url.}"
+            base="${base%.insteadof}"
+            if [[ "$url" == "$val"* && ${#val} -gt ${#longest_match} ]]; then
+                longest_match="$val"
+                longest_base="$base"
+            fi
+        done < <(git config --get-regexp 'url\..*\.insteadof' 2>/dev/null)
+        if [[ -n "$longest_match" ]]; then
+            echo "${longest_base}${url#"$longest_match"}"
+        else
+            echo "$url"
+        fi
+    }
+
     local cmd="${1:-}"
     shift 2>/dev/null || true
 
@@ -94,22 +114,71 @@ EOF
             ref_repo="$(_co_find_default)"
             [[ "$ref_repo" == "$CO_PARENT" ]] && ref_repo="$CO_GIT_ROOT"
 
+            local _clone_url
+            _clone_url="$(_co_resolve_url "$CO_ORIGIN")"
+
             echo "cloning into $target ..."
-            git clone --reference "$ref_repo" --no-checkout "$CO_ORIGIN" "$target"
+            git clone --reference "$ref_repo" --no-checkout "$_clone_url" "$target"
+
+            # Copy non-origin remotes from source checkout
+            local _remote _rurl
+            while IFS= read -r _remote; do
+                [[ "$_remote" == "origin" || -z "$_remote" ]] && continue
+                _rurl="$(git -C "$ref_repo" remote get-url "$_remote" 2>/dev/null)" || continue
+                _rurl="$(_co_resolve_url "$_rurl")"
+                git -C "$target" remote add "$_remote" "$_rurl" 2>/dev/null || true
+            done < <(git -C "$ref_repo" remote 2>/dev/null)
+
             git -C "$target" fetch origin
+
+            local _track_remote="" _track_branch=""
 
             if [[ -z "$ref" ]]; then
                 local default_branch
                 default_branch="$(git -C "$target" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||')" || default_branch="main"
                 git -C "$target" checkout "$default_branch"
+                _track_remote="origin"
+                _track_branch="$default_branch"
             elif [[ "$ref" == pr:* ]]; then
                 local pr_num="${ref#pr:}"
                 echo "fetching PR #$pr_num ..."
-                git -C "$target" fetch origin "pull/$pr_num/head:pr-$pr_num"
-                git -C "$target" checkout "pr-$pr_num"
+
+                local _pr_owner="" _pr_branch=""
+                if command -v gh &>/dev/null; then
+                    local _pr_info
+                    _pr_info="$(cd "$ref_repo" && gh pr view "$pr_num" --json headRefName,headRepositoryOwner --jq '"\(.headRepositoryOwner.login) \(.headRefName)"' 2>/dev/null)" || true
+                    if [[ -n "$_pr_info" ]]; then
+                        _pr_owner="${_pr_info%% *}"
+                        _pr_branch="${_pr_info#* }"
+                    fi
+                fi
+
+                if [[ -n "$_pr_owner" && -n "$_pr_branch" ]]; then
+                    local _pr_remote_url
+                    _pr_remote_url="$(echo "$_clone_url" | sed -E 's|(github\.com[:/])[^/]+|\1'"$_pr_owner"'|')"
+                    git -C "$target" remote add "$_pr_owner" "$_pr_remote_url" 2>/dev/null || true
+                    git -C "$target" fetch "$_pr_owner" "+refs/heads/$_pr_branch:refs/remotes/$_pr_owner/$_pr_branch"
+                    git -C "$target" checkout -b "pr-$pr_num" "$_pr_owner/$_pr_branch"
+                    _track_remote="$_pr_owner"
+                    _track_branch="$_pr_branch"
+                else
+                    git -C "$target" fetch origin "pull/$pr_num/head:pr-$pr_num"
+                    git -C "$target" checkout "pr-$pr_num"
+                fi
             else
                 echo "checking out $ref ..."
                 git -C "$target" checkout "$ref"
+                _track_remote="origin"
+                _track_branch="$ref"
+            fi
+
+            # Set upstream tracking
+            if [[ -n "$_track_remote" && -n "$_track_branch" ]]; then
+                local _local_branch
+                _local_branch="$(git -C "$target" rev-parse --abbrev-ref HEAD 2>/dev/null)"
+                if [[ -n "$_local_branch" && "$_local_branch" != "HEAD" ]]; then
+                    git -C "$target" branch --set-upstream-to="$_track_remote/$_track_branch" "$_local_branch" 2>/dev/null || true
+                fi
             fi
 
             echo "ready: $target"

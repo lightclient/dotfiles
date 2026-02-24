@@ -32,3 +32,6 @@
 
 [credential]
 	helper = store
+
+[url "git@github.com:ethereum/go-ethereum"]
+  insteadOf = https://github.com/ethereum/go-ethereum
