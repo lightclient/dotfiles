@@ -120,13 +120,19 @@ EOF
             echo "cloning into $target ..."
             git clone --reference "$ref_repo" --no-checkout "$_clone_url" "$target"
 
-            # Copy non-origin remotes from source checkout
-            local _remote _rurl
+            # Copy non-origin remotes and gh-resolved settings from source checkout
+            local _remote _rurl _gh_resolved
             while IFS= read -r _remote; do
-                [[ "$_remote" == "origin" || -z "$_remote" ]] && continue
+                [[ -z "$_remote" ]] && continue
+                _gh_resolved="$(git -C "$ref_repo" config --get "remote.$_remote.gh-resolved" 2>/dev/null)" || true
+                if [[ "$_remote" == "origin" ]]; then
+                    [[ -n "$_gh_resolved" ]] && git -C "$target" config "remote.origin.gh-resolved" "$_gh_resolved"
+                    continue
+                fi
                 _rurl="$(git -C "$ref_repo" remote get-url "$_remote" 2>/dev/null)" || continue
                 _rurl="$(_co_resolve_url "$_rurl")"
                 git -C "$target" remote add "$_remote" "$_rurl" 2>/dev/null || true
+                [[ -n "$_gh_resolved" ]] && git -C "$target" config "remote.$_remote.gh-resolved" "$_gh_resolved"
             done < <(git -C "$ref_repo" remote 2>/dev/null)
 
             git -C "$target" fetch origin
