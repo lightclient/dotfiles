@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.53.0",
+  "lastChangelogVersion": "0.54.2",
   "defaultThinkingLevel": "xhigh",
   "hideThinkingBlock": false,
   "defaultProvider": "anthropic",
