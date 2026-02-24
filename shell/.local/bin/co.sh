@@ -1,5 +1,4 @@
 co() {
-    set -euo pipefail
 
     _co_usage() {
         cat <<'EOF'
@@ -25,25 +24,58 @@ EOF
     }
 
     _co_resolve() {
-        CO_GIT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "error: not inside a git repository" >&2; return 1; }
-        CO_PARENT="$(dirname "$CO_GIT_ROOT")"
-        CO_ORIGIN="$(git -C "$CO_GIT_ROOT" remote get-url origin 2>/dev/null)" || { echo "error: no 'origin' remote" >&2; return 1; }
+        if CO_GIT_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+            # Inside a checkout — parent is one level up
+            CO_PARENT="$(dirname "$CO_GIT_ROOT")"
+            CO_ORIGIN="$(git -C "$CO_GIT_ROOT" remote get-url origin 2>/dev/null)" || { echo "error: no 'origin' remote" >&2; return 1; }
+        else
+            # Not in a repo — look for checkouts in current directory
+            CO_PARENT="$(pwd)"
+            CO_GIT_ROOT=""
+            CO_ORIGIN=""
+
+            # Collect unique origins
+            local origins=() dir o found existing
+            for dir in "$CO_PARENT"/*/; do
+                [[ -d "$dir/.git" ]] || continue
+                o="$(git -C "$dir" remote get-url origin 2>/dev/null)" || continue
+                found=0
+                for existing in "${origins[@]+"${origins[@]}"}"; do
+                    [[ "$existing" == "$o" ]] && { found=1; break; }
+                done
+                (( found )) || origins+=("$o")
+                [[ -z "$CO_ORIGIN" ]] && { CO_ORIGIN="$o"; CO_GIT_ROOT="$dir"; }
+            done
+
+            [[ -n "$CO_ORIGIN" ]] || { echo "error: no git checkouts found in $(pwd)" >&2; return 1; }
+
+            if (( ${#origins[@]} > 1 )); then
+                echo "error: multiple repos in $(pwd) — cd into a checkout first" >&2
+                for o in "${origins[@]}"; do
+                    echo "  $o" >&2
+                done
+                return 1
+            fi
+        fi
     }
 
     _co_find_default() {
-        local dir
+        local dir fallback="" o b name
         for dir in "$CO_PARENT"/*/; do
             [[ -d "$dir/.git" ]] || continue
-            local o b
             o="$(git -C "$dir" remote get-url origin 2>/dev/null)" || continue
             [[ "$o" == "$CO_ORIGIN" ]] || continue
+            name="$(basename "$dir")"
             b="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null)" || continue
-            if [[ "$b" == "main" || "$b" == "master" ]]; then
+            if [[ "$name" == "main" || "$name" == "master" ]]; then
                 echo "${dir%/}"
                 return
             fi
+            if [[ -z "$fallback" && ("$b" == "main" || "$b" == "master") ]]; then
+                fallback="${dir%/}"
+            fi
         done
-        echo "$CO_PARENT"
+        echo "${fallback:-$CO_PARENT}"
     }
 
     local cmd="${1:-}"
@@ -58,8 +90,12 @@ EOF
             local target="$CO_PARENT/$name"
             [[ -d "$target" ]] && { echo "error: $target already exists" >&2; return 1; }
 
+            local ref_repo
+            ref_repo="$(_co_find_default)"
+            [[ "$ref_repo" == "$CO_PARENT" ]] && ref_repo="$CO_GIT_ROOT"
+
             echo "cloning into $target ..."
-            git clone --reference "$CO_GIT_ROOT" --no-checkout "$CO_ORIGIN" "$target"
+            git clone --reference "$ref_repo" --no-checkout "$CO_ORIGIN" "$target"
             git -C "$target" fetch origin
 
             if [[ -z "$ref" ]]; then
@@ -102,21 +138,37 @@ EOF
             ;;
         ls)
             _co_resolve || return 1
-            local current_name
-            current_name="$(basename "$CO_GIT_ROOT")"
+            local current_name="" default_branch="" dir o name branch label
+            [[ -n "$CO_GIT_ROOT" ]] && current_name="$(basename "$CO_GIT_ROOT")"
 
-            local dir
+            # Determine the default branch name
             for dir in "$CO_PARENT"/*/; do
                 [[ -d "$dir/.git" ]] || continue
-                local o
+                o="$(git -C "$dir" remote get-url origin 2>/dev/null)" || continue
+                [[ "$o" == "$CO_ORIGIN" ]] || continue
+                default_branch="$(git -C "$dir" symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's|refs/remotes/origin/||')" && break
+            done
+            [[ -z "$default_branch" ]] && default_branch="main"
+
+            for dir in "$CO_PARENT"/*/; do
+                [[ -d "$dir/.git" ]] || continue
                 o="$(git -C "$dir" remote get-url origin 2>/dev/null)" || continue
                 [[ "$o" == "$CO_ORIGIN" ]] || continue
 
-                local name branch marker=" "
                 name="$(basename "$dir")"
                 branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo "?")"
-                [[ "$name" == "$current_name" ]] && marker="*"
-                printf "%s %-20s %s\n" "$marker" "$name" "$branch"
+
+                if [[ "$name" == "$current_name" ]]; then
+                    label="* $name"
+                else
+                    label="  $name"
+                fi
+
+                if [[ "$branch" != "$default_branch" ]]; then
+                    printf "%-27s %s\n" "$label" "$branch"
+                else
+                    printf "%s\n" "$label"
+                fi
             done
             ;;
         *)
