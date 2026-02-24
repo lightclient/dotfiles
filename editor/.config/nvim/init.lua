@@ -452,8 +452,13 @@ require("lazy").setup({
 						:gsub("\n", "")
 						:gsub("^refs/remotes/" .. remote_name .. "/", "")
 					if vim.v.shell_error ~= 0 or default_branch == "" then
-						-- Fallback: try common branch names
-						default_branch = "main"
+						-- Fallback: check if remote has master or main branch
+						local check = vim.fn.system("git rev-parse --verify refs/remotes/" .. remote_name .. "/master 2>/dev/null"):gsub("\n", "")
+						if vim.v.shell_error == 0 and check ~= "" then
+							default_branch = "master"
+						else
+							default_branch = "main"
+						end
 					end
 
 					-- Get file path relative to the git root
@@ -466,13 +471,11 @@ require("lazy").setup({
 					local github_url = remote_url:gsub("git@github.com:", "https://github.com/"):gsub("%.git$", "")
 					local blame_url = github_url .. "/blame/" .. default_branch .. "/" .. rel_path .. "#L" .. line
 
-					if vim.fn.has("mac") == 1 then
-						local env = vim.fn.environ()
-						if env.SSH_CLIENT or env.SSH_CONNECTION then
-							vim.notify("Blame URL: " .. blame_url, vim.log.levels.INFO)
-						else
-							vim.fn.system({ "open", blame_url })
-						end
+					local env = vim.fn.environ()
+					if env.SSH_CLIENT or env.SSH_CONNECTION then
+						vim.notify("Blame URL: " .. blame_url, vim.log.levels.INFO)
+					elseif vim.fn.has("mac") == 1 then
+						vim.fn.system({ "open", blame_url })
 					elseif vim.fn.has("unix") == 1 then
 						vim.fn.system({ "xdg-open", blame_url })
 					end
